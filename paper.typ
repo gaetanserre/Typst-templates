@@ -153,6 +153,15 @@
 #let Break  = keyword([break], weight: "bold")
 #let Continue = keyword([continue], weight: "bold")
 
+/*
+Usage
+figure(
+  [code of the algorithm using blocks and keywords above],
+  kind: "algorithm",
+  caption: [name of the algorihm],
+  supplement: [whatever you want (not displayed)],
+)
+*/
 
 #let config(
   title: none,
