@@ -153,15 +153,6 @@
 #let Break  = keyword([break], weight: "bold")
 #let Continue = keyword([continue], weight: "bold")
 
-/*
-Usage
-figure(
-  [code of the algorithm using blocks and keywords above],
-  kind: "algorithm",
-  caption: [name of the algorihm],
-  supplement: [whatever you want (not displayed)],
-)
-*/
 
 #let config(
   title: none,
@@ -219,11 +210,13 @@ figure(
 
   set text(font: "CMU Serif")
 
-  set heading(numbering: "1.")
-
-  set cite(style: "chicago-author-date")
+  set heading(numbering: (..nums) => {
+      nums.pos().map(str).join(".")
+  })
 
   set math.equation(numbering: "(1)")
+
+  set cite(style: "chicago-author-date")
 
   set list(indent: 1em)
   set enum(indent: 1em)
