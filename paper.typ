@@ -62,38 +62,22 @@
 /*********************************ALGORITHM ENVIRONMENT*******************************************/
 /*************************************************************************************************/
 
-#let algorithm(
-  name: none,
-  content: []
-) = {
-  align(center, 
-    block(width: auto, {
-      align(left, {
-        counter("algorithm").step()
-        //show line: set block(above: 0.4em, below: 0.4em)
-        set par(first-line-indent: 0em)
-        box(width: 1fr, line(length: 100%, stroke: {1.5pt + black}))
-        [ \ *Algorithm #counter("algorithm").display():* #name \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black}))
-        [\ #content \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black}))
-      })
-    })
-  )
-}
-
 #let code_block(
   identifier: none,
   content: [],
-  color: red
+  has_stroke: true,
+  inset: 1em
 ) = {
   identifier
   block(width: auto, above: 0.5em, below:0.5em, {
+    let stroke = ("left": 1pt, "rest": none)
+    if not has_stroke {
+      stroke = none
+    }
     rect(
-      stroke:("left": 1pt, "rest": none),
+      stroke: stroke,
       outset: -0.1em,
-      inset: 1em,
-      //fill: color
+      inset: inset,
       )[#content]
   })
 }
@@ -102,18 +86,16 @@
   variable: "i",
   iterator: "x",
   content: [],
-  color: red
 ) = {
-  code_block(identifier: [*for* #variable *in* #iterator *do*], content: content, color: color)
+  code_block(identifier: [*for* #variable *in* #iterator *do*], content: content)
   [*end for*]
 }
 
 #let while_loop(
   condition: "x",
   content: [],
-  color: red
 ) = {
-  code_block(identifier: [*while* #condition *do*], content: content, color: color)
+  code_block(identifier: [*while* #condition *do*], content: content)
   [*end while*]
 }
 
@@ -121,11 +103,10 @@
   condition: "x",
   content: [],
   else_content: none,
-  color: red
 ) = {
-  code_block(identifier: [*if* #condition *then*], content: content, color: color)
+  code_block(identifier: [*if* #condition *then*], content: content)
   if else_content != none {
-    code_block(identifier: [*else*], content: else_content, color: color)
+    code_block(identifier: [*else*], content: else_content)
   }
   [*end if*]
 }
@@ -153,6 +134,40 @@
 #let Break  = keyword([break], weight: "bold")
 #let Continue = keyword([continue], weight: "bold")
 
+#let algorithm(
+  name: none,
+  input: none,
+  output: none,
+  content: []
+) = {
+  align(center, 
+    block(width: auto, {
+      align(left, {
+        counter("algorithm").step()
+        //show line: set block(above: 0.4em, below: 0.4em)
+        set par(first-line-indent: 0em)
+        box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
+        [*Algorithm #counter("algorithm").display():* #name \ ]
+        box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
+        if input != none {
+          [*Input:*]
+          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+        }
+        if output != none {
+          [*Output:*]
+          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+        }
+
+        if output != none or input != none {
+          box(width: 1fr, line(length: 100%, stroke: {1pt + black})) +  [ \ ]
+        }
+        
+        [#content \ ]
+        box(width: 1fr, line(length: 100%, stroke: {1pt + black}))
+      })
+    })
+  )
+}
 
 #let config(
   title: none,
@@ -218,7 +233,7 @@
 
   set cite(style: "chicago-author-date")
 
-  set list(indent: 1em)
+  set terms(indent: 1em)
   set enum(indent: 1em)
 
   // Reference style
@@ -236,10 +251,7 @@
   // Algorithm figure
   show figure: fig => {
     if fig.kind == "algorithm" {
-      algorithm(
-        name: fig.caption,
-        content: fig.body
-      )
+      fig.body
     } else {
       fig
     }
