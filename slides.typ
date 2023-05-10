@@ -99,45 +99,48 @@
 /*************************************************************************************************/
 
 #let heading_count = counter(heading)
-#let math_block(supplement, counter, name, it) = {
+
+#let math_block(supplement, name, it, lb) = {
+  let counter = counter(supplement)
   counter.step()
   let body = {
-    if name == "" {
+    if name == none {
         [*#supplement #counter.display().* ] + it
     } else {
       [*#supplement #counter.display() * (#emph(name)). ] + it
     }
   }
-  set align(center)
-  block(
-      width:92%,
-      align(left, body)
-    )
+  let fig = figure(
+    block(width:92%, align(left, body)),
+    caption: none,
+    kind: supplement,
+    supplement: supplement,
+  )
+  if lb != none [
+    #fig
+    #label(lb)
+  ] else [
+    #fig
+  ]
 }
 
-// Counters
+// Math blocks
 
-#let th_count = counter("theorem")
-#let theorem(name, it) = math_block("Theorem", th_count, name, it)
+#let theorem(name, it, label: none) = math_block("Theorem", name, it, label)
 
-#let def_count = counter("definition")
-#let definition(name, it) = math_block("Definition", def_count, name, it)
+#let definition(name, it, label: none) = math_block("Definition", name, it, label)
 
-#let lemma_count = counter("lemma")
-#let lemma(name, it) = math_block("Lemma", lemma_count, name, it)
+#let lemma(name, it, label: none) = math_block("Lemma", name, it, label)
 
-#let prop_count = counter("proposition")
-#let proposition(name, it) = math_block("Proposition", prop_count, name, it)
+#let proposition(name, it, label: none) = math_block("Proposition", name, it, label)
 
 #let proof(it) = {
   set align(center)
   block(
     width: 90%,
     align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
-  )
-  
+  ) 
 }
-
 
 /*********************************ALGORITHM ENVIRONMENT*******************************************/
 /*************************************************************************************************/
