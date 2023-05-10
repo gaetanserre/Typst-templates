@@ -271,13 +271,12 @@
     }
   )
 
+  // Set rules
+
   set par(
     justify: true,
+    first-line-indent: 1em
   )
-
-  show ref: set text(fill: rgb("#ff0000"))
-  show link: set text(fill: rgb("#7209b7"))
-  show cite: set text(fill: rgb("#4361ee"))
 
   set text(font: "CMU Serif", size: 15pt, fill: text_color)
 
@@ -302,6 +301,12 @@
     }
   })
 
+  // Show rules
+
+  show ref: set text(fill: rgb("#ff0000"))
+  show link: set text(fill: rgb("#7209b7"))
+  show cite: set text(fill: rgb("#4361ee"))
+
   // Algorithm figure
   show figure: fig => {
     if fig.kind == "algorithm" {
@@ -310,11 +315,6 @@
       fig
     }
   }
-
-  // Indentation
-  set par(
-    first-line-indent: 1em
-  )
 
   show heading: it => [
     #set align(center)
