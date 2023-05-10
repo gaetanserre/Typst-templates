@@ -88,7 +88,7 @@
       counter_heading += 1
       if heading.body not in unique_headings {
         unique_headings += (heading.body,)
-       heading.body + box(width: 1fr, line(length: 100%)) + [#counter_heading] + [ \ ]
+       heading.body + box(width: 1fr, repeat([.$space$])) + [#counter_heading] + [ \ ]
       }
     }
     pagebreak()
