@@ -72,7 +72,7 @@
 
 #let code_block(
   identifier: none,
-  content: [],
+  content: none,
   has_stroke: true,
   inset: 1em
 ) = {
@@ -93,7 +93,7 @@
 #let for_loop(
   variable: "i",
   iterator: "x",
-  content: [],
+  content: none,
 ) = {
   code_block(identifier: [*for* #variable *in* #iterator *do*], content: content)
   [*end for*]
@@ -101,7 +101,7 @@
 
 #let while_loop(
   condition: "x",
-  content: [],
+  content: none,
 ) = {
   code_block(identifier: [*while* #condition *do*], content: content)
   [*end while*]
@@ -109,7 +109,7 @@
 
 #let if_block(
   condition: "x",
-  content: [],
+  content: none,
   else_content: none,
 ) = {
   code_block(identifier: [*if* #condition *then*], content: content)
@@ -146,7 +146,7 @@
   name: none,
   input: none,
   output: none,
-  content: []
+  content: none
 ) = {
   align(center, 
     block(width: auto, {
