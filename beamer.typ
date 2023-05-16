@@ -17,6 +17,53 @@
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
+#let slide(
+  title: none,
+  subtitle: none,
+  content: none,
+  breakpage: true,
+) = {
+  title
+  subtitle
+  align(center + horizon, box([
+    #content
+  ]))
+
+  if breakpage {
+    pagebreak()
+  }
+}
+
+#let columns_slide(
+  title: none,
+  subtitle: none,
+  contents: (),
+  common_content: none,
+  columns: none,
+  breakpage: true,
+) = {
+
+  if columns == none {
+    columns = ()
+    for content in contents {
+      columns += (auto,)
+    }
+  }
+
+  let content = grid(
+    columns: columns,
+    rows: (auto),
+    ..contents
+  ) + common_content
+
+  slide(
+    title: title,
+    subtitle: subtitle,
+    content: content,
+    breakpage: breakpage,
+  )
+}
+
 #let init_bullet_list(
   items: (),
   numbered: false,
@@ -42,28 +89,33 @@
   }
 }
 
-#let slide(
-  title: "Title",
-  content: [Content],
-  breakpage: true,
-) = {
-  title
-  align(center + horizon, box([
-    #content
-  ]))
+#let unfold_bullet(items, title: none, numbered:false, last_bullet: none) = {
+  let bullet = init_bullet_list(
+    items: items,
+    numbered: numbered
+  )
 
-  if breakpage {
-    pagebreak()
+  let idx = ()
+  for i in range(items) {
+    idx += (i,)
+    slide(
+      title: title,
+      content: align(left, bullet(
+        idx,
+        last_bullet: last_bullet
+      )),
+    )
   }
 }
 
 #let title_slide(
-  title: "Title",
+  title: [Title],
   subtitle: [Subtitle],
   authors: [Authors],
   emails: [Emails],
-  date: none) = {
-    set page(footer: [])
+  date: none,
+  background: none) = {
+    set page(footer: [], background: background)
     slide(
       title: none,
       content: [
@@ -75,6 +127,7 @@
       ],
       breakpage: false
     )
+    counter(page).update(0)
 }
 
 #let outline_slide() = {
@@ -107,7 +160,7 @@
     if name == none {
         [*#supplement #counter.display().* ] + it
     } else {
-      [*#supplement #counter.display() * (#emph(name)). ] + it
+      [*#supplement * (#emph(name)). ] + it
     }
   }
   let fig = figure(
@@ -147,7 +200,7 @@
 
 #let code_block(
   identifier: none,
-  content: [],
+  content: none,
   has_stroke: true,
   inset: 1em
 ) = {
@@ -168,7 +221,7 @@
 #let for_loop(
   variable: "i",
   iterator: "x",
-  content: [],
+  content: none,
 ) = {
   code_block(identifier: [*for* #variable *in* #iterator *do*], content: content)
   [*end for*]
@@ -176,7 +229,7 @@
 
 #let while_loop(
   condition: "x",
-  content: [],
+  content: none,
 ) = {
   code_block(identifier: [*while* #condition *do*], content: content)
   [*end while*]
@@ -184,7 +237,7 @@
 
 #let if_block(
   condition: "x",
-  content: [],
+  content: none,
   else_content: none,
 ) = {
   code_block(identifier: [*if* #condition *then*], content: content)
@@ -221,7 +274,7 @@
   name: none,
   input: none,
   output: none,
-  content: []
+  content: none
 ) = {
   align(center, 
     block(width: auto, {
@@ -257,6 +310,7 @@
   background_color: rgb("#03045e"),
   background: none,
   title_color: rgb("#00b4d8"),
+  subtitle_color: rgb("#00b400"),
   text_color: rgb("#caf0f8"),
   footer: none,
   doc
@@ -278,7 +332,6 @@
 
   set par(
     justify: true,
-    first-line-indent: 1em
   )
 
   set text(font: "CMU Serif", size: 15pt, fill: text_color)
@@ -289,7 +342,7 @@
 
   set math.equation(numbering: "(1)")
 
-  set list(indent: 1em)
+  set list(indent: 1em, marker: ([•], [--]))
   set enum(indent: 1em)
 
   // Reference style
@@ -319,11 +372,20 @@
     }
   }
 
-  show heading: it => [
-    #set align(center)
-    #set text(25pt, font: "CMU Serif", weight: "regular", fill: title_color)
-    #it.body
-  ]
+  show heading: it => {
+    set align(left)
+    if it.level == 1 {
+      set text(25pt, font: "CMU Serif", weight: "regular", fill: title_color)
+      it.body
+    } else if it.level == 2 {
+      set par(first-line-indent: 0em)
+      set text(15pt, font: "CMU Serif", style: "italic", weight: "regular", fill: subtitle_color)
+      it.body
+    } else {
+      it.body
+    }
+    
+  }
 
   doc
 }
