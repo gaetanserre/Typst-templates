@@ -44,6 +44,7 @@
   contents: (),
   common_content: none,
   columns: none,
+  column_gutter: 2em,
   breakpage: true,
 ) = {
 
@@ -56,6 +57,7 @@
 
   let content = grid(
     columns: columns,
+    column-gutter: column_gutter,
     rows: (auto),
     ..contents
   ) + common_content
@@ -183,11 +185,11 @@
 
 // Math blocks
 
-#let theorem(name, it, label: none) = math_block("Theorem", name, it, label)
+#let theorem(name, it, label: none) = math_block("Théorème", name, it, label)
 
-#let definition(name, it, label: none) = math_block("Definition", name, it, label)
+#let definition(name, it, label: none) = math_block("Définition", name, it, label)
 
-#let lemma(name, it, label: none) = math_block("Lemma", name, it, label)
+#let lemma(name, it, label: none) = math_block("Lemme", name, it, label)
 
 #let proposition(name, it, label: none) = math_block("Proposition", name, it, label)
 
@@ -317,6 +319,7 @@
   subtitle_color: rgb("#00b400"),
   text_color: rgb("#caf0f8"),
   footer: none,
+  lang: "en",
   doc
 ) = {
   set page(
@@ -338,7 +341,7 @@
     justify: true,
   )
 
-  set text(font: "CMU Serif", size: 15pt, fill: text_color)
+  set text(font: "CMU Serif", size: 15pt, fill: text_color, lang: lang)
 
   set heading(numbering: none)
 
