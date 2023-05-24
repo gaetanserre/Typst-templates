@@ -159,18 +159,23 @@
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement, name, it, lb) = {
+#let math_block(supplement, name, it, lb, stroke_color) = {
   let counter = counter(supplement)
   counter.step()
   let body = {
     if name == none {
         [*#supplement #counter.display().* ] + it
     } else {
-      [*#supplement * (#emph(name)). ] + it
+      [*#supplement #counter.display() * (#emph(name)). ] + it
     }
   }
   let fig = figure(
-    block(width:92%, align(left, body)),
+    rect(
+      width:100%,
+      stroke: ("left": 1pt+stroke_color, "rest": none),
+      fill: rgb("#eeeeee"),
+      align(left, body)
+    ),
     caption: none,
     kind: supplement,
     supplement: supplement,
@@ -185,20 +190,20 @@
 
 // Math blocks
 
-#let theorem(name, it, label: none) = math_block("Théorème", name, it, label)
+#let theorem(name, it, label: none) = math_block("Theorem", name, it, label, rgb("#219ebc"))
 
-#let definition(name, it, label: none) = math_block("Définition", name, it, label)
+#let definition(name, it, label: none) = math_block("Definition", name, it, label, rgb("#ffb703"))
 
-#let lemma(name, it, label: none) = math_block("Lemme", name, it, label)
+#let lemma(name, it, label: none) = math_block("Lemma", name, it, label, rgb("#219ebc"))
 
-#let proposition(name, it, label: none) = math_block("Proposition", name, it, label)
+#let proposition(name, it, label: none) = math_block("Proposition", name, it, label, rgb("#fb8500"))
 
 #let proof(it) = {
   set align(center)
   block(
     width: 90%,
     align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
-  ) 
+  )
 }
 
 /*********************************ALGORITHM ENVIRONMENT*******************************************/
