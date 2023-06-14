@@ -24,10 +24,11 @@
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement, name, it, lb, stroke_color) = {
+#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = {
   let counter = counter(supplement)
   counter.step()
   let body = {
+    set math.equation(numbering: eq_numbering)
     if name == none {
         [*#supplement #counter.display().* ] + it
     } else {
@@ -55,13 +56,17 @@
 
 // Math blocks
 
-#let theorem(name, it, label: none) = math_block("Theorem", name, it, label, rgb("#219ebc"))
+#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#643843"), eq_numbering)
 
-#let definition(name, it, label: none) = math_block("Definition", name, it, label, rgb("#ffb703"))
+#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#C88EA7"), eq_numbering)
 
-#let lemma(name, it, label: none) = math_block("Lemma", name, it, label, rgb("#219ebc"))
+#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#99627A"), eq_numbering)
 
-#let proposition(name, it, label: none) = math_block("Proposition", name, it, label, rgb("#fb8500"))
+#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#E7CBCB"), eq_numbering)
+
+#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#E57C23"), eq_numbering)
+
+#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#E8AA42"), eq_numbering)
 
 #let proof(it) = {
   set align(center)
