@@ -68,6 +68,8 @@
 
 #let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#E8AA42"), eq_numbering)
 
+#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#E8D33F"), eq_numbering)
+
 #let proof(it) = {
   set align(center)
   block(
@@ -205,7 +207,7 @@
       let page_nb = counter(page).at(loc).at(0)
       if page_nb == 1 {
         none
-      } else if calc.mod(page_nb, 2) == 1 {
+      } else if calc.rem(page_nb, 2) == 1 {
         align(right, header)
       } else {
         if authors == none {

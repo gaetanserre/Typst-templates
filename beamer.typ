@@ -4,12 +4,13 @@
 
 
 // Utils functions
-#let range(arr) = {
+#let range(n) = {
   let ret = ()
-  let arr_copy = ()
-  for i in arr {
-    arr_copy += (i,)
-    ret += (arr_copy.len() - 1,)
+  let i = 0
+
+  while i < n {
+    ret += (i,)
+    i += 1
   }
   ret
 }
@@ -102,7 +103,7 @@
   )
 
   let idx = ()
-  for i in range(items) {
+  for i in range(items.len()) {
     idx += (i,)
     slide(
       title: title,
@@ -136,20 +137,28 @@
     counter(page).update(0)
 }
 
+#let get_n_space(n) = {
+  for i in range(n) {
+    $space space space$
+  }
+}
+
 #let outline_slide() = {
   set par(first-line-indent: 0em)
-  align(center, text(size: 25pt, [Outline\ ]))
+  //align(center, text(size: 25pt, [Outline\ ]))
+  [= Outline]
   locate(loc => {
     let headings = query(selector(heading).after(loc), loc)
     let unique_headings = ()
     let counter_heading = counter(page).at(loc).at(0)
+    align(horizon,
     for heading in headings {
       counter_heading += 1
       if heading.body not in unique_headings {
         unique_headings += (heading.body,)
-       heading.body + box(width: 1fr, repeat([.$space$])) + [#counter_heading] + [ \ ]
+        get_n_space(heading.level - 1) + heading.body + box(width: 1fr, repeat([.$space$])) + [#counter_heading] + [ \ ]
       }
-    }
+    })
     pagebreak()
   }) 
 }
@@ -165,9 +174,9 @@
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
-        [*#supplement #counter.display().* ] + it
+        [*#supplement.* ] + it
     } else {
-      [*#supplement #counter.display() * (#emph(name)). ] + it
+      [*#supplement* (#emph(name)). ] + it
     }
   }
   let fig = figure(
