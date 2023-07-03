@@ -1,0 +1,7 @@
+[package]
+name = "paper"
+version = "1.0.0"
+entrypoint = "paper.typ"
+authors = ["Gaëtan Serré"]
+license = "Unlicense"
+description = "Paper template."
