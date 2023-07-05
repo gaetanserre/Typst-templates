@@ -39,6 +39,7 @@
       width:100%,
       stroke: ("left": 1pt+stroke_color, "rest": none),
       fill: rgb("#eeeeee"),
+      inset: (bottom: 10pt, rest: 5pt),
       align(left, body)
     ),
     caption: none,
@@ -55,19 +56,19 @@
 
 // Math blocks
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#643843"), eq_numbering)
+#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#B287A3"), eq_numbering)
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#C88EA7"), eq_numbering)
+#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#750D37"), eq_numbering)
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#99627A"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#210124"), eq_numbering)
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#E7CBCB"), eq_numbering)
+#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#F9F5E3"), eq_numbering)
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#E57C23"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#BFB1C1"), eq_numbering)
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#E8AA42"), eq_numbering)
+#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380B6"), eq_numbering)
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#E8D33F"), eq_numbering)
+#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9BC4CB"), eq_numbering)
 
 #let proof(it) = {
   set align(center)
@@ -195,7 +196,7 @@
   authors: none,
   abstract: none,
   keywords: (),
-  logo: "figures/cb_logo.png",
+  logo:none,
   doc,
 ) = {
 
@@ -228,7 +229,7 @@
     background: locate(loc => {
       let page_nb = counter(page).at(loc).at(0)
       if page_nb == 1 and logo != none {
-        align(right+top, image(logo, width: 10%))
+        logo
       } else {
         none
       }
