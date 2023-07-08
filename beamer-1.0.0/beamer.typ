@@ -150,15 +150,13 @@
   locate(loc => {
     let headings = query(selector(heading).after(loc), loc)
     let unique_headings = ()
-    let counter_heading = counter(page).at(loc).at(0)
+    //let counter_heading = counter(page).at(loc).at(0)
     align(horizon,
     for heading in headings {
-      if heading.level == 1 {
-        counter_heading += 1
-      }
       if heading.body not in unique_headings {
+        let heading_loc = heading.location()
         unique_headings += (heading.body,)
-        get_n_space(heading.level - 1) + link((page: counter_heading+1, x: 0em, y: 0em))[#heading.body] + box(width: 1fr, repeat([.$space$])) + link((page: counter_heading+1, x: 0em, y: 0em))[#counter_heading] + [ \ ]
+        get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#(heading_loc.page() - 1)] + [ \ ]
       }
     })
     pagebreak()
