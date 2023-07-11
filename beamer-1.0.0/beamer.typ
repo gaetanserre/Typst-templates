@@ -143,10 +143,15 @@
   }
 }
 
-#let outline_slide() = {
+#let outline_dict_lang = (
+  "en": "Outline",
+  "fr": "Table des matières",
+)
+
+#let outline_slide(lang: "en") = {
   set par(first-line-indent: 0em)
   //align(center, text(size: 25pt, [Outline\ ]))
-  [= Outline]
+  [= #outline_dict_lang.at(lang)]
   locate(loc => {
     let headings = query(selector(heading).after(loc), loc)
     let unique_headings = ()
