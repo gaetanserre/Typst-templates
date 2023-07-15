@@ -22,21 +22,58 @@
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
+#let has_previous_title(title, loc) = {
+  let headings = query(selector(heading).before(loc), loc)
+  for heading in headings {
+    if heading.body == title {
+      return true
+    }
+  }
+  return false
+}
+
+#let title_style(title, title_color: rgb("#6e4e80")) = {
+  text(size: 25pt, fill: title_color, title)
+}
+
+#let subtitle_style(subtitle, subtitle_color: rgb("#9384D1")) = {
+  text(style: "italic", fill: subtitle_color, subtitle)
+}
+
 #let slide(
   title: none,
   subtitle: none,
   content: none,
   breakpage: true,
 ) = {
-  title
-  subtitle
-  align(center + horizon, box([
-    #content
-  ]))
+  locate(loc => {
+    set par(leading: 20pt)
+    if title != none {
+      if has_previous_title(title, loc) {
+        title_style(title)
+      } else {
+        [= #title]
+      }
+    }
 
-  if breakpage {
-    pagebreak()
-  }
+    if subtitle != none {
+      if has_previous_title(subtitle, loc) {
+        linebreak() + subtitle_style(subtitle)
+      } else {
+        [== #subtitle]
+      }
+    }
+
+    set par(leading: 0.65em)
+
+    align(center + horizon, box([
+      #content
+    ]))
+
+    if breakpage {
+      pagebreak()
+    }
+  })
 }
 
 #let columns_slide(
@@ -148,7 +185,7 @@
   "fr": "Table des matières",
 )
 
-#let outline_slide(lang: "en") = {
+#let outline_slide(lang: "en", size: none) = {
   set par(first-line-indent: 0em)
   //align(center, text(size: 25pt, [Outline\ ]))
   [= #outline_dict_lang.at(lang)]
@@ -161,7 +198,12 @@
       if heading.body not in unique_headings {
         let heading_loc = heading.location()
         unique_headings += (heading.body,)
-        get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#(heading_loc.page() - 1)] + [ \ ]
+        let content = get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#(heading_loc.page() - 1)] + [ \ ]
+        if size != none {
+          text(size: size, content)
+        } else {
+          content
+        }
       }
     })
     pagebreak()
@@ -342,8 +384,8 @@
 #let config(
   background_color: rgb("#03045e"),
   background: none,
-  title_color: rgb("#00b4d8"),
-  subtitle_color: rgb("#00b400"),
+  title_color: rgb("#6e4e80"),
+  subtitle_color: rgb("#9384D1"),
   text_color: rgb("#caf0f8"),
   footer: none,
   lang: "en",
