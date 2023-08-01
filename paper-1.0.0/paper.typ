@@ -274,10 +274,13 @@
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
 
-  // Algorithm figure
+  // Algorithm & Lean figure
   show figure: fig => {
     if fig.kind == "algorithm" {
       fig.body
+    } else if fig.kind == "leancode" {
+      counter(fig.kind).step()
+      fig.body + align(center, [#fig.supplement #counter(fig.kind).display(): #fig.caption])
     } else {
       fig
     }
