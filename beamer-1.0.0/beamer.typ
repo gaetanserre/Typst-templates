@@ -380,6 +380,19 @@
   )
 }
 
+/*********************************LANGUAGE ENVIRONMENT*******************************************/
+/*************************************************************************************************/
+
+/***LEAN***/
+#let lean_block(cont) = {
+  set text(font: "Menlo", size: 9pt)
+  show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at)\s"): set text(red)
+  show regex("(lemma|theorem|def)\s\w+"): set text(rgb("#6334b5"))
+  show regex(`(\/?)--.*`.text): set text(rgb("#aaaaaa"))
+  show regex(`\/-([^(\/)]|\n)*-\/`.text): set text(rgb("#aaaaaa"))
+  [#cont \ ]
+}
+
 
 #let config(
   background_color: rgb("#03045e"),
@@ -438,10 +451,13 @@
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
 
-  // Algorithm figure
+  // Algorithm & Lean figure
   show figure: fig => {
     if fig.kind == "algorithm" {
       fig.body
+    } else if fig.kind == "leancode" {
+      counter(fig.kind).step()
+      fig.body + align(center, [#fig.supplement #counter(fig.kind).display(): #fig.caption])
     } else {
       fig
     }

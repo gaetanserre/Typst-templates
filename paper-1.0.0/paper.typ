@@ -189,6 +189,19 @@
   )
 }
 
+/*********************************LANGUAGE ENVIRONMENT*******************************************/
+/*************************************************************************************************/
+
+/***LEAN***/
+#let lean_block(cont) = {
+  set text(font: "Menlo", size: 9pt)
+  show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at)\s"): set text(red)
+  show regex("(lemma|theorem|def)\s\w+"): set text(rgb("#6334b5"))
+  show regex(`(\/?)--.*`.text): set text(rgb("#aaaaaa"))
+  show regex(`\/-([^(\/)]|\n)*-\/`.text): set text(rgb("#aaaaaa"))
+  [#cont \ ]
+}
+
 #let config(
   title: none,
   subtitle: none,
