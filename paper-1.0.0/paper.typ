@@ -4,15 +4,6 @@
 
 
 // Utils functions
-#let range(arr: ()) = {
-  let ret = ()
-  let arr_copy = ()
-  for i in arr {
-    arr_copy += (i,)
-    ret += (arr_copy.len() - 1,)
-  }
-  ret
-}
 
 #let TODO(it) = {
   text(fill: red, weight: "extrabold", [TODO #it])
@@ -194,12 +185,42 @@
 
 /***LEAN***/
 #let lean_block(cont) = {
+  set par(first-line-indent: 0em)
+  show par: set block(spacing: 0em)
   set text(font: "Menlo", size: 9pt)
-  show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at)\s"): set text(red)
-  show regex("(lemma|theorem|def)\s\w+"): set text(rgb("#6334b5"))
-  show regex(`(\/?)--.*`.text): set text(rgb("#aaaaaa"))
-  show regex(`\/-([^(\/)]|\n)*-\/`.text): set text(rgb("#aaaaaa"))
-  [#cont \ ]
+  let reg_comment = regex(`(\/-([^\/]|\n)*-\/)|(--.*)`.text)
+  let comment_matches = cont.matches(reg_comment)
+  let cont_without_comments = cont.split(reg_comment)
+
+  let print_comment(cont) = [
+    #set par(first-line-indent: 0em)
+    #show regex("[^\*]\*[^\*]+\*"): set text(style: "italic", fill: rgb("000000"))
+    #show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: rgb("000000"))
+    #text(fill: rgb("#6a737d"), cont)
+    ]
+  
+  let n_comment = 0
+  let n_char = 0
+  let final_content = []
+  for i in range(cont_without_comments.len()) {
+    while (comment_matches.len() > n_comment and (comment_matches.at(n_comment).start == n_char or comment_matches.at(n_comment).start == 1)) {
+      final_content += print_comment(comment_matches.at(n_comment).text)
+      n_char += comment_matches.at(n_comment).text.len()
+      n_comment += 1
+    }
+    final_content += [
+      #set par(first-line-indent: 0em)
+      #show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at)\s"): set text(fill: rgb("#d73a4a"))
+      #show regex("(lemma|theorem|def)\s\w+"): set text(fill: rgb("#6f42c1"))
+      #show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
+      #cont_without_comments.at(i)
+    ]
+    n_char += cont_without_comments.at(i).len()
+  }
+  if (comment_matches.len() > n_comment) {
+    final_content += print_comment(comment_matches.at(n_comment).text)
+  }
+  final_content
 }
 
 #let config(
