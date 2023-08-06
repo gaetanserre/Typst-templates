@@ -188,16 +188,24 @@
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
   set text(font: "Menlo", size: 9pt)
-  let reg_comment = regex(`(\/-([^\/]|\n)*-\/)|(--.*)`.text)
+  let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
 
-  let print_comment(cont) = [
-    #set par(first-line-indent: 0em)
-    #show regex("[^\*]\*[^\*]+\*"): set text(style: "italic", fill: rgb("000000"))
-    #show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: rgb("000000"))
-    #text(fill: rgb("#6a737d"), cont)
-    ]
+  let print_comment(comment) = {
+    set par(first-line-indent: 0em)
+    show regex("[^\*]\*[^\*]+\*"): set text(style: "italic", fill: rgb("000000"))
+    show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: rgb("000000"))
+    text(fill: rgb("#6a737d"), comment)
+  }
+
+  let print_code(code) = {
+    set par(first-line-indent: 0em)
+    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|sorry)(\s|$)"): set text(fill: rgb("#d73a4a"))
+    show regex("(lemma|theorem|def)\s\w+"): set text(fill: rgb("#6f42c1"))
+    show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
+    code
+  }
   
   let n_comment = 0
   let n_char = 0
@@ -208,13 +216,7 @@
       n_char += comment_matches.at(n_comment).text.len()
       n_comment += 1
     }
-    final_content += [
-      #set par(first-line-indent: 0em)
-      #show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at)\s"): set text(fill: rgb("#d73a4a"))
-      #show regex("(lemma|theorem|def)\s\w+"): set text(fill: rgb("#6f42c1"))
-      #show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
-      #cont_without_comments.at(i)
-    ]
+    final_content += print_code(cont_without_comments.at(i))
     n_char += cont_without_comments.at(i).len()
   }
   if (comment_matches.len() > n_comment) {
