@@ -230,8 +230,10 @@
   subtitle: none,
   header: none,
   authors: none,
+  supervision: none,
   abstract: none,
   keywords: (),
+  first_page_nb: true,
   logo:none,
   doc,
 ) = {
@@ -257,11 +259,26 @@
     })
   }
 
+  let page_nb = {
+    if first_page_nb {
+      "1"
+    } else {
+      (..nums) => {
+        let nb = nums.pos().map(str).at(0)
+        if nb == "1" {
+          none
+        } else {
+          nb
+        }
+      }
+    }
+  }
+  
   // Set rules
   set page(
     paper: "a4",
     header: header_loc,
-    numbering: "1",
+    numbering: page_nb,
     background: locate(loc => {
       let page_nb = counter(page).at(loc).at(0)
       if page_nb == 1 and logo != none {
@@ -272,10 +289,7 @@
     })
   )
 
-  set par(
-    justify: true,
-    first-line-indent: 1em
-  )
+  set par(justify: true, first-line-indent: 1em)
 
   set text(font: "CMU Serif")
 
@@ -322,6 +336,15 @@
     }
   }
 
+  show heading: it => {
+    if it.body == [Bibliography] or it.body == [Contents] {
+      [#it.body \ \ ]
+    } else {
+      let heading_nb = counter(heading).display()
+      [#heading_nb $space$ #it.body \ \ ]
+    }
+  }
+
   // Title & subtitle
   align(center, {
     text(16pt)[#title]
@@ -349,6 +372,12 @@
         ]
       ])
     }
+  }
+
+  if supervision != none {
+    align(center,[
+      #supervision
+    ])
   }
 
   // Abstract
