@@ -158,7 +158,7 @@
         //show line: set block(above: 0.4em, below: 0.4em)
         set par(first-line-indent: 0em)
         box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
-        [*Algorithm #counter("algorithm").display():* #name \ ]
+        [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
         box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
         if input != none {
           [*Input:*]
@@ -321,8 +321,10 @@
   // Show rules
 
   show ref: set text(fill: rgb("#ff0000"))
+  show footnote: set text(fill: rgb("#ff0000"))
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
+  
 
   // Algorithm & Lean figure
   show figure: fig => {
@@ -341,7 +343,7 @@
       [#it.body \ \ ]
     } else {
       let heading_nb = counter(heading).display()
-      [#heading_nb $space$ #it.body \ \ ]
+      [\ \ #heading_nb $space$ #it.body \ \ ]
     }
   }
 
