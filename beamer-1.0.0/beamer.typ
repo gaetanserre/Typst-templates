@@ -275,11 +275,16 @@
 
 #let code_block(
   identifier: none,
-  content: none,
+  comment: none,
+  content: [],
   has_stroke: true,
   inset: 1em
 ) = {
-  identifier
+  if comment == none {
+    identifier
+  } else {
+    [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
+  }
   block(width: auto, above: 0.5em, below:0.5em, {
     let stroke = ("left": 1pt, "rest": none)
     if not has_stroke {
@@ -288,7 +293,7 @@
     rect(
       stroke: stroke,
       outset: -0.1em,
-      inset: inset,
+      inset: (right: 0em, rest: inset),
       )[#content]
   })
 }
@@ -296,28 +301,32 @@
 #let for_loop(
   variable: "i",
   iterator: "x",
-  content: none,
+  comment: none,
+  content: [],
 ) = {
-  code_block(identifier: [*for* #variable *in* #iterator *do*], content: content)
+  code_block(identifier: [*for* #variable *in* #iterator *do*], comment: comment, content: content)
   [*end for*]
 }
 
 #let while_loop(
   condition: "x",
-  content: none,
+  comment: none,
+  content: [],
 ) = {
-  code_block(identifier: [*while* #condition *do*], content: content)
+    code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
   [*end while*]
 }
 
 #let if_block(
   condition: "x",
-  content: none,
+  comment: none,
+  content: [],
+  else_comment: none,
   else_content: none,
 ) = {
-  code_block(identifier: [*if* #condition *then*], content: content)
+  code_block(identifier: [*if* #condition *then*], comment: comment, content: content)
   if else_content != none {
-    code_block(identifier: [*else*], content: else_content)
+    code_block(identifier: [*else*], comment: else_comment, content: else_content)
   }
   [*end if*]
 }
@@ -455,7 +464,7 @@
     justify: true,
   )
 
-  set text(font: "CMU Serif", size: 15pt, fill: text_color, lang: lang)
+  set text(font: "New Computer Modern", size: 15pt, fill: text_color, lang: lang)
 
   set heading(numbering: none)
 
@@ -483,6 +492,7 @@
   show footnote: set text(fill: rgb("#ff0000"))
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
+  show math.equation: set text(font: "New Computer Modern Math")
 
   // Algorithm & Lean figure
   show figure: fig => {
