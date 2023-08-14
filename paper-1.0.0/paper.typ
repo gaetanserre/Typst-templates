@@ -191,6 +191,8 @@
 /*************************************************************************************************/
 
 /***LEAN***/
+#let lean_font(cont) = text(font: "Menlo", size: 9pt, cont)
+
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
@@ -229,7 +231,7 @@
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
   }
-  final_content
+  block(width: 90%, align(left, final_content))
 }
 
 #let config(
