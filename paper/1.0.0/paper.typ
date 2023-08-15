@@ -63,6 +63,7 @@
 
 #let proof(it) = {
   set align(center)
+  set math.equation(numbering: none)
   block(
     width: 90%,
     align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
@@ -354,7 +355,11 @@
       [#it.body \ \ ]
     } else {
       let heading_nb = counter(heading).display()
-      [\ \ #heading_nb $space$ #it.body \ \ ]
+      if it.level == 1 {
+        [\ \ #heading_nb $space$ #it.body\ \ ]
+      } else {
+        [\ #heading_nb $space$ #it.body\ ]
+      }
     }
   }
 
