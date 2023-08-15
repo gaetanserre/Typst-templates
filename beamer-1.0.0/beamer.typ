@@ -4,9 +4,210 @@
 
 
 // Utils functions
+#let range(n) = {
+  let ret = ()
+  let i = 0
+
+  while i < n {
+    ret += (i,)
+    i += 1
+  }
+  ret
+}
 
 #let TODO(it) = {
   text(fill: red, weight: "extrabold", [TODO #it])
+}
+
+/**********************************BEAMER ENVIRONMENT*********************************************/
+/*************************************************************************************************/
+
+#let has_previous_title(title, loc) = {
+  let headings = query(selector(heading).before(loc), loc)
+  for heading in headings {
+    if heading.body == title {
+      return true
+    }
+  }
+  return false
+}
+
+#let title_style(title, title_color: rgb("#6e4e80")) = {
+  text(size: 25pt, fill: title_color, title)
+}
+
+#let subtitle_style(subtitle, subtitle_color: rgb("#9384D1")) = {
+  text(style: "italic", fill: subtitle_color, subtitle)
+}
+
+#let slide(
+  title: none,
+  subtitle: none,
+  content: none,
+  breakpage: true,
+) = {
+  locate(loc => {
+    set par(leading: 20pt)
+    if title != none {
+      if has_previous_title(title, loc) {
+        title_style(title)
+      } else {
+        [= #title]
+      }
+    }
+
+    if subtitle != none {
+      if has_previous_title(subtitle, loc) {
+        linebreak() + subtitle_style(subtitle)
+      } else {
+        [== #subtitle]
+      }
+    }
+
+    set par(leading: 0.65em)
+
+    align(center + horizon, box([
+      #content
+    ]))
+
+    if breakpage {
+      pagebreak()
+    }
+  })
+}
+
+#let columns_slide(
+  title: none,
+  subtitle: none,
+  contents: (),
+  common_content: none,
+  columns: none,
+  column_gutter: 2em,
+  breakpage: true,
+) = {
+
+  if columns == none {
+    columns = ()
+    for content in contents {
+      columns += (auto,)
+    }
+  }
+
+  let content = grid(
+    columns: columns,
+    column-gutter: column_gutter,
+    rows: (auto),
+    ..contents
+  ) + common_content
+
+  slide(
+    title: title,
+    subtitle: subtitle,
+    content: content,
+    breakpage: breakpage,
+  )
+}
+
+#let init_bullet_list(
+  items: (),
+  numbered: false,
+) = {
+  (numbers, last_bullet: none) => {
+    let counter = 0
+    for i in numbers {
+    if numbered {
+      if counter == (numbers.len() - 1) and last_bullet != none [
+        + #last_bullet(items.at(i))
+      ] else [
+        + #items.at(i)
+      ]
+     } else {
+      if counter == (numbers.len() - 1) and last_bullet != none [
+        - #last_bullet(items.at(i))
+      ] else [
+        - #items.at(i)
+      ]
+     }
+     counter += 1
+    }
+  }
+}
+
+#let unfold_bullet(items, title: none, numbered:false, last_bullet: none) = {
+  let bullet = init_bullet_list(
+    items: items,
+    numbered: numbered
+  )
+
+  let idx = ()
+  for i in range(items.len()) {
+    idx += (i,)
+    slide(
+      title: title,
+      content: align(left, bullet(
+        idx,
+        last_bullet: last_bullet
+      )),
+    )
+  }
+}
+
+#let title_slide(
+  title: [Title],
+  subtitle: [Subtitle],
+  authors: [Authors],
+  emails: [Emails],
+  date: none,
+  background: none) = {
+    set page(footer: [], background: background)
+    slide(
+      title: none,
+      content: [
+        #text(size: 20pt, [#title])\
+        #emph(subtitle)\
+        #authors\
+        #emails\
+        #date
+      ],
+      breakpage: false
+    )
+    counter(page).update(0)
+}
+
+#let get_n_space(n) = {
+  for i in range(n) {
+    $space space space$
+  }
+}
+
+#let outline_dict_lang = (
+  "en": "Outline",
+  "fr": "Table des matières",
+)
+
+#let outline_slide(lang: "en", size: none) = {
+  set par(first-line-indent: 0em)
+  //align(center, text(size: 25pt, [Outline\ ]))
+  [= #outline_dict_lang.at(lang)]
+  locate(loc => {
+    let headings = query(selector(heading).after(loc), loc)
+    let unique_headings = ()
+    //let counter_heading = counter(page).at(loc).at(0)
+    align(horizon,
+    for heading in headings {
+      if heading.body not in unique_headings {
+        let heading_loc = heading.location()
+        unique_headings += (heading.body,)
+        let content = get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#(heading_loc.page() - 1)] + [ \ ]
+        if size != none {
+          text(size: size, content)
+        } else {
+          content
+        }
+      }
+    })
+    pagebreak()
+  }) 
 }
 
 /***********************************MATHS ENVIRONMENT*********************************************/
@@ -20,9 +221,9 @@
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
-        [*#supplement #counter.display().* ] + it
+        [*#supplement.* ] + it
     } else {
-      [*#supplement #counter.display() * (#emph(name)). ] + it
+      [*#supplement* (#emph(name)). ] + it
     }
   }
   let fig = figure(
@@ -63,13 +264,11 @@
 
 #let proof(it) = {
   set align(center)
-  set math.equation(numbering: none)
   block(
     width: 90%,
     align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
   )
 }
-
 
 /*********************************ALGORITHM ENVIRONMENT*******************************************/
 /*************************************************************************************************/
@@ -132,7 +331,9 @@
   [*end if*]
 }
 
-#let comment(content) = {
+#let comment(
+  content
+) = {
   [#box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", content)]
 }
 
@@ -157,7 +358,7 @@
   name: none,
   input: none,
   output: none,
-  content: []
+  content: none
 ) = {
   align(center, 
     block(width: auto, {
@@ -235,83 +436,45 @@
   block(width: 90%, align(left, final_content))
 }
 
+
 #let config(
-  title: none,
-  subtitle: none,
-  header: none,
-  authors: none,
-  supervision: none,
-  abstract: none,
-  keywords: (),
-  first_page_nb: true,
-  logo:none,
-  doc,
+  background_color: rgb("#03045e"),
+  background: none,
+  title_color: rgb("#6e4e80"),
+  subtitle_color: rgb("#9384D1"),
+  text_color: rgb("#caf0f8"),
+  footer: none,
+  lang: "en",
+  doc
 ) = {
-
-  // Odd-switching header function
-  let header_loc = none
-  if header != none {
-    header_loc = locate(loc => {
-      let page_nb = counter(page).at(loc).at(0)
-      if page_nb == 1 {
-        none
-      } else if calc.rem(page_nb, 2) == 1 {
-        align(right, header)
+  set page(
+    paper: "presentation-16-9",
+    numbering: "1",
+    footer: footer,
+    background: {
+      if background != none {
+        background
       } else {
-        if authors == none {
-          align(left, "Gaëtan Serré")
-        } else if authors.len() > 1 {
-          align(left, authors.at(0).name  + " et al.")
-        } else {
-          align(left, authors.at(0).name)
-        }
-      }
-    })
-  }
-
-  let page_nb = {
-    if first_page_nb {
-      "1"
-    } else {
-      (..nums) => {
-        let nb = nums.pos().map(str).at(0)
-        if nb == "1" {
-          none
-        } else {
-          nb
-        }
+        rect(width: 100%, height: 100%, fill: background_color, stroke: none)
       }
     }
-  }
-  
-  // Set rules
-  set page(
-    paper: "a4",
-    header: header_loc,
-    numbering: page_nb,
-    background: locate(loc => {
-      let page_nb = counter(page).at(loc).at(0)
-      if page_nb == 1 and logo != none {
-        logo
-      } else {
-        none
-      }
-    })
   )
 
-  set par(justify: true, first-line-indent: 1em)
+  // Set rules
 
-  set text(font: "New Computer Modern")
+  set par(
+    justify: true,
+  )
 
-  set heading(numbering: (..nums) => {
-      nums.pos().map(str).join(".")
-  })
+  set text(font: "New Computer Modern", size: 15pt, fill: text_color, lang: lang)
 
-  set math.equation(numbering: "(1)")
+  set heading(numbering: none)
 
   set cite(style: "chicago-author-date")
 
-  set terms(indent: 1em)
+  set math.equation(numbering: "(1)")
+
+  set list(indent: 1em, marker: ([•], [--]))
   set enum(indent: 1em)
 
   // Reference style
@@ -326,17 +489,12 @@
     }
   })
 
-  set outline(indent: true, fill: repeat([.$space$]))
-
   // Show rules
-
   show ref: set text(fill: rgb("#ff0000"))
   show footnote: set text(fill: rgb("#ff0000"))
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
-
   show math.equation: set text(font: "New Computer Modern Math")
-  
 
   // Algorithm & Lean figure
   show figure: fig => {
@@ -351,81 +509,19 @@
   }
 
   show heading: it => {
-    if it.body == [Bibliography] or it.body == [Contents] {
-      [#it.body \ \ ]
+    set align(left)
+    if it.level == 1 {
+      set text(25pt, font: "CMU Serif", weight: "regular", fill: title_color)
+      it.body
+    } else if it.level == 2 {
+      set par(first-line-indent: 0em)
+      set text(15pt, font: "CMU Serif", style: "italic", weight: "regular", fill: subtitle_color)
+      it.body
     } else {
-      let heading_nb = counter(heading).display()
-      if it.level == 1 {
-        [\ \ #heading_nb $space$ #it.body\ \ ]
-      } else {
-        [\ #heading_nb $space$ #it.body\ ]
-      }
+      it.body
     }
+    
   }
-
-  // Title & subtitle
-  align(center, {
-    text(16pt)[#title]
-    if subtitle != none {
-      text(14pt)[ \ #emph(subtitle)]
-     }
-  })
-
-  // Authors
-  if authors == none {
-      align(center, text(14pt)[
-        Gaëtan Serré \
-        Centre Borelli - ENS Paris-Saclay \
-        #text(font: "CMU Typewriter Text")[
-          #link("mailto:gaetan.serre@ens-paris-saclay.fr")
-        ]
-      ])
-  } else {
-    for author in authors {
-      align(center, text(14pt)[
-        #author.name \
-        #author.affiliation \
-        #text(font: "CMU Typewriter Text")[
-          #link("mailto:" + author.email)
-        ]
-      ])
-    }
-  }
-
-  if supervision != none {
-    align(center,[
-      #supervision
-    ])
-  }
-
-  // Abstract
-  let width_box_abstract = 80%
-
-  if abstract != none {
-    align(center, text()[*Abstract*])
-    align(center, 
-      box(width:width_box_abstract, 
-        align(left, text(size: 10pt)[
-          #abstract
-        ])
-      )
-    )
-  }
-  
-  // Keywords
-  align(center, box(width:width_box_abstract,
-    align(left, {
-      set text(size: 10pt)
-      if keywords.len() > 0 {
-        [*Keywords: *]
-        let last_keyword = keywords.pop()
-        for keyword in keywords {
-          [#keyword] + [; ]
-        }
-        [#last_keyword.]
-      }
-    })
-  ))
 
   doc
 }
