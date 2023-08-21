@@ -244,7 +244,7 @@
   abstract: none,
   keywords: (),
   first_page_nb: true,
-  logo:none,
+  logo: none,
   doc,
 ) = {
 
