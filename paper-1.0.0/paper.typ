@@ -47,19 +47,19 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#B287A3"), eq_numbering)
+#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#b287a3"), eq_numbering)
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#750D37"), eq_numbering)
+#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#b1255d"), eq_numbering)
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#210124"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#5f072a"), eq_numbering)
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#F9F5E3"), eq_numbering)
+#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#BFB1C1"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#bfb1c1"), eq_numbering)
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380B6"), eq_numbering)
+#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380b6"), eq_numbering)
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9BC4CB"), eq_numbering)
+#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
 
 #let proof(it) = {
   set align(center)
@@ -204,14 +204,14 @@
 
   let print_comment(comment) = {
     set par(first-line-indent: 0em)
-    show regex("[^\*]\*[^\*]+\*"): set text(style: "italic", fill: rgb("000000"))
-    show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: rgb("000000"))
+    show regex("[^\*]\*[^\*]+\*(\n | [^\*])"): set text(style: "italic", fill: black)
+    show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: black)
     text(fill: rgb("#6a737d"), comment)
   }
 
   let print_code(code) = {
     set par(first-line-indent: 0em)
-    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|sorry)(\s|$)"): set text(fill: rgb("#d73a4a"))
+    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show)(\s|$)"): set text(fill: rgb("#d73a4a"))
     show regex("(lemma|theorem|def)\s\w+"): set text(fill: rgb("#6f42c1"))
     show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
     code
