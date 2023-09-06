@@ -1,7 +1,0 @@
-[package]
-name = "beamer"
-version = "1.0.0"
-entrypoint = "beamer.typ"
-authors = ["Gaëtan Serré"]
-license = "Unlicense"
-description = "Beamer template."

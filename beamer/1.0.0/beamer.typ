@@ -248,19 +248,19 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#B287A3"), eq_numbering)
+#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#b287a3"), eq_numbering)
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#750D37"), eq_numbering)
+#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#b1255d"), eq_numbering)
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#210124"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#5f072a"), eq_numbering)
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#F9F5E3"), eq_numbering)
+#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#BFB1C1"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#bfb1c1"), eq_numbering)
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380B6"), eq_numbering)
+#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380b6"), eq_numbering)
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9BC4CB"), eq_numbering)
+#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
 
 #let proof(it) = {
   set align(center)
