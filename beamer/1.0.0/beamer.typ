@@ -193,7 +193,7 @@
     let headings = query(selector(heading).after(loc), loc)
     let unique_headings = ()
     //let counter_heading = counter(page).at(loc).at(0)
-    align(horizon,
+    align(top,
     for heading in headings {
       if heading.body not in unique_headings {
         let heading_loc = heading.location()
@@ -221,9 +221,9 @@
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
-        [*#supplement.* ] + it
+        [*#supplement #counter.display().* ] + it
     } else {
-      [*#supplement* (#emph(name)). ] + it
+      [*#supplement #counter.display()* (#emph(name)). ] + it
     }
   }
   let fig = figure(
@@ -393,12 +393,12 @@
 /*************************************************************************************************/
 
 /***LEAN***/
-#let lean_font(cont) = text(font: "Menlo", size: 9pt, cont)
+#let lean_font(cont) = text(font: "Menlo", size: 12pt, cont)
 
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "Menlo", size: 9pt)
+  set text(font: "Menlo", size: 12pt)
   let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
