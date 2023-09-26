@@ -66,6 +66,7 @@
 #let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
 
 #let proof(it) = {
+  set par(first-line-indent: 0em)
   set align(center)
   set math.equation(numbering: none)
   block(
