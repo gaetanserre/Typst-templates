@@ -22,6 +22,29 @@
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
+#let in_annex(loc) = {
+  let previous_heading_body = query(selector(heading).before(loc), loc).map(h => {h.body})
+  return previous_heading_body.contains([Bibliography]) and previous_heading_body.last() != [Bibliography]
+}
+
+#let get_last_page_before_annex(loc) = {
+  if in_annex(loc) {
+    return counter(page).final(loc).at(0)
+  }
+
+  let headings = query(selector(heading).after(loc), loc)
+  let after_bib_page_nb = counter(page).at(loc).at(0)
+  let flag = false
+  for heading in headings {
+    if flag {
+      after_bib_page_nb = counter(page).at(heading.location()).at(0) - 1
+      break
+    }
+    flag = heading.body == [Bibliography]
+  }
+  return after_bib_page_nb
+}
+
 #let has_previous_title(title, loc) = {
   let headings = query(selector(heading).before(loc), loc)
   for heading in headings {
@@ -445,7 +468,38 @@
   title_color: rgb("#6e4e80"),
   subtitle_color: rgb("#9384D1"),
   text_color: rgb("#caf0f8"),
-  footer: none,
+  footer: locate(loc => {
+    let page_nb = counter(page).at(loc).at(0)
+    let last_page = get_last_page_before_annex(loc)
+    let max_size_bar = 50pt
+    let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
+
+    let box = {
+      if in_annex(loc) {
+        []
+      } else {
+        align(right, box(
+          width: max_size_bar,
+          height: 6pt,
+          fill: rgb("#eeeeee"),
+          radius: 3pt,
+          align(left, rect(
+            width: current_size_bar,
+            height: 6pt,
+            fill:rgb("#6e4e80"),
+            radius: 3pt
+          ))
+        ))
+      }
+    }
+
+    grid(
+      columns: (33%, 33%, 33%),
+      [],
+      align(center, text(size: 9pt, [#page_nb -- G. Serré - Centre Borelli])),
+      box
+    )
+  }),
   lang: "en",
   doc
 ) = {
