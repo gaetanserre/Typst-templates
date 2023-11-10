@@ -468,6 +468,7 @@
   subtitle_color: rgb("#9384D1"),
   text_color: rgb("#caf0f8"),
   footer: locate(loc => {
+    let color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57))
     let page_nb = counter(page).at(loc).at(0)
     let last_page = get_last_page_before_bib(loc)
     let max_size_bar = 50pt
@@ -485,7 +486,7 @@
           align(left, rect(
             width: current_size_bar,
             height: 6pt,
-            fill:rgb("#6e4e80"),
+            fill: color,
             radius: 3pt
           ))
         ))
