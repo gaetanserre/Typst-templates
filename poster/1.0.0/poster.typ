@@ -334,7 +334,11 @@
     if it.body == [Bibliography] or it.body == [Contents] {
       []
     } else {
-      set text(fill: grad_color)
+      let size = {
+        if it.level >= 2 {30pt}
+        else {50pt}
+      }
+      set text(size: size, fill: grad_color)
       v(0.5em)
       it.body
       v(0.5em)
