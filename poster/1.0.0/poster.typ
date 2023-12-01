@@ -24,9 +24,9 @@
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
-        [*#supplement #counter.display().* ] + it
+        [*#supplement.* ] + it
     } else {
-      [*#supplement #counter.display() * (#emph(name)). ] + it
+      [*#supplement* (#emph(name)). ] + it
     }
   }
   let fig = figure(
@@ -34,7 +34,7 @@
       width:100%,
       stroke: ("left": 1pt+stroke_color, "rest": none),
       fill: rgb("#eeeeee"),
-      inset: (bottom: 10pt, rest: 5pt),
+      inset: (bottom: 0.7em, rest: 0.5em),
       align(left, body)
     ),
     caption: none,
@@ -197,12 +197,12 @@
 /*************************************************************************************************/
 
 /***LEAN***/
-#let lean_font(cont) = text(font: "Menlo", size: 9pt, cont)
+#let lean_font(cont) = text(font: "Menlo", size: 25pt, cont)
 
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "Menlo", size: 9pt)
+  set text(font: "Menlo", size: 25pt)
   let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
@@ -240,81 +240,57 @@
   block(width: 90%, align(left, final_content))
 }
 
+#let grad_color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57))
+#let accent(it) = {
+ set text(fill: rgb(63, 78, 155), weight: "bold")
+ it
+}
+
+#let gen_bibliography(references: "") = {
+  align(left)[
+    #rect(
+      width: 85cm,
+      inset: (top: 2em, left:1em, rest: 0em),
+      stroke: (top: 10pt + grad_color, rest: none),
+      outset: 0em
+      )[
+        #bibliography(references)
+        #v(0.8em)
+      ]
+  ]
+}
+
+#let mail(email) = {
+  set text(font: "CMU Typewriter Text")
+  link("mailto:" + email)[#email]
+}
+
 #let config(
   title: none,
   subtitle: none,
-  header: none,
   authors: none,
-  supervision: none,
-  abstract: none,
-  keywords: (),
-  first_page_nb: true,
-  logo: none,
+  background: none,
   doc,
 ) = {
-
-  // Odd-switching header function
-  let header_loc = none
-  if header != none {
-    header_loc = locate(loc => {
-      let page_nb = counter(page).at(loc).at(0)
-      if page_nb == 1 {
-        none
-      } else if calc.rem(page_nb, 2) == 1 {
-        align(right, header)
-      } else {
-        if authors == none {
-          align(left, "Gaëtan Serré")
-        } else if authors.len() > 1 {
-          align(left, authors.at(0).name  + " et al.")
-        } else {
-          align(left, authors.at(0).name)
-        }
-      }
-    })
-  }
-
-  let page_nb = {
-    if first_page_nb {
-      "1"
-    } else {
-      (..nums) => {
-        let nb = nums.pos().map(str).at(0)
-        if nb == "1" {
-          none
-        } else {
-          nb
-        }
-      }
-    }
-  }
   
   // Set rules
   set page(
-    paper: "a4",
-    header: header_loc,
-    numbering: page_nb,
-    background: locate(loc => {
-      let page_nb = counter(page).at(loc).at(0)
-      if page_nb == 1 and logo != none {
-        logo
-      } else {
-        none
-      }
-    })
+    paper: "a0",
+    header: none,
+    numbering: none,
+    background: background,
+    margin: (top: 3em, bottom: 5em, rest: 3em),
   )
 
-  set par(justify: true, first-line-indent: 1em)
+  set par(justify: true, first-line-indent: 0em)
 
-  set text(font: "New Computer Modern")
+  set text(font: "New Computer Modern", size: 30pt)
 
-  set heading(numbering: (..nums) => {
-      nums.pos().map(str).join(".")
-  })
+  set heading(numbering: none)
 
   set math.equation(numbering: "(1)")
 
-  set cite(style: "chicago-author-date")
+  set cite(style: "ieee")
 
   set terms(indent: 1em)
   set enum(indent: 1em)
@@ -354,40 +330,36 @@
       fig
     }
   }
-
   show heading: it => {
     if it.body == [Bibliography] or it.body == [Contents] {
-      [#it.body \ \ ]
+      []
     } else {
-      let heading_nb = counter(heading).display()
-      if it.level == 1 {
-        [\ \ #heading_nb $space$ #it.body\ \ ]
-      } else {
-        [\ #heading_nb $space$ #it.body\ ]
-      }
+      set text(fill: grad_color)
+      v(0.5em)
+      it.body
+      v(0.5em)
     }
   }
 
   // Title & subtitle
-  align(center, {
-    text(16pt)[#title]
+  align(left, {
+    text(size: 70pt, fill: white)[#title]
     if subtitle != none {
-      text(14pt)[ \ #emph(subtitle)]
+      text(72pt)[ \ #emph(subtitle)]
      }
   })
 
   // Authors
   if authors == none {
-      align(center, text(14pt)[
+      align(left, text(size: 50pt, fill: white)[
         Gaëtan Serré \
-        Centre Borelli - ENS Paris-Saclay \
-        #text(font: "CMU Typewriter Text")[
-          #link("mailto:gaetan.serre@ens-paris-saclay.fr")
+        #text(size: 30pt)[
+          École Normale Supérieure de Paris-Saclay, Centre Borelli, Team MLMDA
         ]
       ])
   } else {
     for author in authors {
-      align(center, text(14pt)[
+      align(center, text(72pt)[
         #author.name \
         #author.affiliation \
         #text(font: "CMU Typewriter Text")[
@@ -396,41 +368,6 @@
       ])
     }
   }
-
-  if supervision != none {
-    align(center,[
-      #supervision
-    ])
-  }
-
-  // Abstract
-  let width_box_abstract = 80%
-
-  if abstract != none {
-    align(center, text()[*Abstract*])
-    align(center, 
-      box(width:width_box_abstract, 
-        align(left, text(size: 10pt)[
-          #abstract
-        ])
-      )
-    )
-  }
-  
-  // Keywords
-  align(center, box(width:width_box_abstract,
-    align(left, {
-      set text(size: 10pt)
-      if keywords.len() > 0 {
-        [*Keywords: *]
-        let last_keyword = keywords.pop()
-        for keyword in keywords {
-          [#keyword] + [; ]
-        }
-        [#last_keyword.]
-      }
-    })
-  ))
 
   doc
 }

@@ -436,7 +436,7 @@
 
   let print_code(code) = {
     set par(first-line-indent: 0em)
-    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|sorry)(\s|$)"): set text(fill: rgb("#d73a4a"))
+    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show|class|instance|where)(\s|$)"): set text(fill: rgb("#d73a4a"))
     show regex("(lemma|theorem|def)\s\w+"): set text(fill: rgb("#6f42c1"))
     show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
     code
