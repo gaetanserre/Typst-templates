@@ -241,10 +241,20 @@
 }
 
 #let grad_color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57))
-#let accent(it) = {
+#let accent(it) = locate(loc => {
+  let color = if loc.position().at("x").cm() < 84.1 / 2 {
+    rgb(63, 78, 155)
+  } else {
+    rgb(233, 80, 57)
+  }
+  set text(fill: color, weight: "bold")
+  it
+})
+
+/* {
  set text(fill: rgb(63, 78, 155), weight: "bold")
  it
-}
+} */
 
 #let gen_bibliography(references: "") = {
   align(left)[
@@ -279,12 +289,12 @@
     header: none,
     numbering: none,
     background: background,
-    margin: (top: 3em, bottom: 5em, rest: 3em),
+    margin: (top: 3em, bottom: 7em, rest: 3em),
   )
 
   set par(justify: true, first-line-indent: 0em)
 
-  set text(font: "New Computer Modern", size: 30pt)
+  set text(font: "New Computer Modern", size: 33pt)
 
   set heading(numbering: none)
 
@@ -308,6 +318,8 @@
   })
 
   set outline(indent: true, fill: repeat([.$space$]))
+
+  set list(marker: ("--", $arrow.r.curve$))
 
   // Show rules
 
@@ -338,11 +350,16 @@
         if it.level >= 2 {30pt}
         else {50pt}
       }
-      set text(size: size, fill: grad_color)
+      set text(size: size)
       v(0.5em)
-      it.body
+      accent(it.body)
       v(0.5em)
     }
+  }
+
+  show bibliography : it => {
+    set text(size: 25pt)
+    it
   }
 
   // Title & subtitle
