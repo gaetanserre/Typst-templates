@@ -202,7 +202,7 @@
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "Menlo", size: 9pt)
+  set text(font: "Menlo", size: 25pt)
   let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
@@ -217,7 +217,8 @@
   let print_code(code) = {
     set par(first-line-indent: 0em)
     show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show|class|instance|where)(\s|$)"): set text(fill: rgb("#d73a4a"))
-    show regex("(lemma|theorem|def)\s\w+"): set text(fill: rgb("#6f42c1"))
+    show regex("Type"): set text(fill: rgb("#d73a4a"))
+    show regex("(lemma|theorem|def|class)\s\w+"): set text(fill: rgb("#6f42c1"))
     show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
     code
   }
@@ -237,7 +238,14 @@
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
   }
-  block(width: 90%, align(left, final_content))
+  
+  block(
+    width:100%,
+    stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
+    fill: rgb("#eeeeee"),
+    inset: (bottom: 0.7em, rest: 0.5em),
+    align(left, final_content)
+  )
 }
 
 #let config(
