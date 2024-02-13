@@ -185,7 +185,7 @@
     slide(
       title: none,
       content: [
-        #text(size: 20pt, [#title])\
+        #text(size: 35pt, [#title])\
         #emph(subtitle)\
         #authors\
         #emails\
