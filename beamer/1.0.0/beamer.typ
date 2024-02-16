@@ -29,19 +29,19 @@
 
 #let get_last_page_before_bib(loc) = {
   if in_bib(loc) {
-    return counter(page).final(loc).at(0)
+    return counter("page").final(loc).at(0)
   }
 
   let headings = query(selector(heading).after(loc), loc)
-  let bib_page_nb = counter(page).final(loc).at(0)
+  let bib_page_nb = counter("page").final(loc).at(0)
   let flag = false
   for heading in headings {
     if heading.body == [Bibliography] {
-      bib_page_nb = counter(page).at(heading.location()).at(0)
+      bib_page_nb = counter("page").at(heading.location()).at(0)
     }
     flag = heading.body == [Bibliography]
   }
-  return bib_page_nb - 1
+  return bib_page_nb
 }
 
 #let has_previous_title(title, loc) = {
@@ -83,7 +83,10 @@
         linebreak() + subtitle_style(subtitle)
       } else {
         [== #subtitle]
+        counter("page").step()
       }
+    } else {
+      counter("page").step()
     }
 
     set par(leading: 0.65em)
@@ -193,7 +196,7 @@
       ],
       breakpage: false
     )
-    counter(page).update(0)
+    counter("page").update(0)
 }
 
 #let get_n_space(n) = {
@@ -324,11 +327,12 @@
 
 #let for_loop(
   variable: "i",
-  iterator: "x",
+  start: "1",
+  end: "n",
   comment: none,
   content: [],
 ) = {
-  code_block(identifier: [*for* #variable *in* #iterator *do*], comment: comment, content: content)
+  code_block(identifier: [*for* #variable $=$ #start *to* #end *do*], comment: comment, content: content)
   [*end for*]
 }
 
@@ -477,7 +481,7 @@
   text_color: rgb("#caf0f8"),
   footer: locate(loc => {
     let color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57))
-    let page_nb = counter(page).at(loc).at(0)
+    let page_nb = counter("page").at(loc).at(0)
     let last_page = get_last_page_before_bib(loc)
     let max_size_bar = 50pt
     let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
