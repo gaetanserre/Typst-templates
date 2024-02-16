@@ -106,11 +106,12 @@
 
 #let for_loop(
   variable: "i",
-  iterator: "x",
+  start: "1",
+  end: "n",
   comment: none,
   content: [],
 ) = {
-  code_block(identifier: [*for* #variable *in* #iterator *do*], comment: comment, content: content)
+  code_block(identifier: [*for* #variable $=$ #start *to* #end *do*], comment: comment, content: content)
   [*end for*]
 }
 
