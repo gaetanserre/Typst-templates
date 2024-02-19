@@ -41,7 +41,7 @@
     }
     flag = heading.body == [Bibliography]
   }
-  return bib_page_nb
+  return bib_page_nb - 1
 }
 
 #let has_previous_title(title, loc) = {
@@ -58,7 +58,7 @@
   text(size: 25pt, fill: title_color, title)
 }
 
-#let subtitle_style(subtitle, subtitle_color: rgb("#9384D1")) = {
+#let subtitle_style(subtitle, subtitle_color: rgb("#9384d1")) = {
   text(style: "italic", fill: subtitle_color, subtitle)
 }
 
@@ -235,10 +235,18 @@
   }) 
 }
 
+#let thanks_slide(title_color: rgb("#6e4e80")) = {
+  show heading: it => {
+    set align(center + horizon)
+    set text(size: 30pt, fill: title_color)
+    it.body
+  }
+  set page(footer: [])
+  [= Thank you for your attention!]
+}
+
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
-
-#let heading_count = counter(heading)
 
 #let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = {
   let counter = counter(supplement)
@@ -477,10 +485,10 @@
   background_color: rgb("#03045e"),
   background: none,
   title_color: rgb("#6e4e80"),
-  subtitle_color: rgb("#9384D1"),
+  subtitle_color: rgb("#9384d1"),
   text_color: rgb("#caf0f8"),
   footer: locate(loc => {
-    let color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57))
+    let color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57), relative: "parent")
     let page_nb = counter("page").at(loc).at(0)
     let last_page = get_last_page_before_bib(loc)
     let max_size_bar = 50pt
