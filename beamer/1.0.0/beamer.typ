@@ -550,7 +550,7 @@
 
   set math.equation(numbering: "(1)")
 
-  set list(indent: 1em, marker: ([•], [--]))
+  set list(marker: ("--", $arrow.r.curve$))
   set enum(indent: 1em)
 
   // Reference style
