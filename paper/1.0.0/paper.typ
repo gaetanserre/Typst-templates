@@ -66,9 +66,6 @@
 #let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
 
 #let proof(it) = {
-  set par(first-line-indent: 0em)
-  set align(center)
-  set math.equation(numbering: none)
   block(
     width: 90%,
     align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
@@ -203,7 +200,7 @@
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "Menlo", size: 25pt)
+  set text(font: "Menlo", size: 9pt)
   let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
