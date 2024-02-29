@@ -323,6 +323,7 @@
   set cite(style: "chicago-author-date")
 
   set terms(indent: 1em)
+  set list(marker: ("--", $arrow.r.curve$))
   set enum(indent: 1em)
 
   // Reference style
