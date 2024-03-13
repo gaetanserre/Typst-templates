@@ -44,8 +44,8 @@
   return bib_page_nb - 1
 }
 
-#let has_previous_title(title, loc) = {
-  let headings = query(selector(heading).before(loc), loc)
+#let has_previous_title(title) = {
+  let headings = query(selector(heading).before(here()))
   for heading in headings {
     if heading.body == title {
       return true
@@ -67,11 +67,10 @@
   subtitle: none,
   content: none,
   breakpage: true,
-) = {
-  locate(loc => {
+) = context {
     set par(leading: 20pt)
     if title != none {
-      if has_previous_title(title, loc) {
+      if has_previous_title(title) {
         title_style(title)
       } else {
         [= #title]
@@ -79,7 +78,7 @@
     }
 
     if subtitle != none {
-      if has_previous_title(subtitle, loc) {
+      if has_previous_title(subtitle) {
         linebreak() + subtitle_style(subtitle)
       } else {
         [== #subtitle]
@@ -98,7 +97,6 @@
     if breakpage {
       pagebreak()
     }
-  })
 }
 
 #let columns_slide(
@@ -236,13 +234,8 @@
 }
 
 #let thanks_slide(title_color: rgb("#6e4e80")) = {
-  show heading: it => {
-    set align(center + horizon)
-    set text(size: 30pt, fill: title_color)
-    it.body
-  }
   set page(footer: [])
-  [= Thank you for your attention!]
+  align(center + horizon, text(size: 30pt, fill: title_color, [Thank you for your attention!]))
 }
 
 /***********************************MATHS ENVIRONMENT*********************************************/
@@ -487,15 +480,15 @@
   title_color: rgb("#6e4e80"),
   subtitle_color: rgb("#9384d1"),
   text_color: rgb("#caf0f8"),
-  footer: locate(loc => {
+  footer: context {
     let color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57), relative: "parent")
-    let page_nb = counter("page").at(loc).at(0)
-    let last_page = get_last_page_before_bib(loc)
+    let page_nb = counter("page").at(here()).at(0)
+    let last_page = get_last_page_before_bib(here())
     let max_size_bar = 50pt
     let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
 
     let box = {
-      if in_bib(loc) {
+      if in_bib(here()) {
         []
       } else {
         align(right, box(
@@ -519,7 +512,7 @@
       align(center, text(size: 9pt, [#page_nb -- G. Serré - Centre Borelli])),
       box
     )
-  }),
+  },
   lang: "en",
   doc
 ) = {

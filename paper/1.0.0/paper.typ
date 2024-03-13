@@ -262,8 +262,8 @@
   // Odd-switching header function
   let header_loc = none
   if header != none {
-    header_loc = locate(loc => {
-      let page_nb = counter(page).at(loc).at(0)
+    header_loc = context {
+      let page_nb = counter(page).at(here()).at(0)
       if page_nb == 1 {
         none
       } else if calc.rem(page_nb, 2) == 1 {
@@ -277,7 +277,7 @@
           align(left, authors.at(0).name)
         }
       }
-    })
+    }
   }
 
   let page_nb = {
@@ -300,14 +300,14 @@
     paper: "a4",
     header: header_loc,
     numbering: page_nb,
-    background: locate(loc => {
-      let page_nb = counter(page).at(loc).at(0)
+    background: context {
+      let page_nb = counter(page).at(here()).at(0)
       if page_nb == 1 and logo != none {
         logo
       } else {
         none
       }
-    })
+    }
   )
 
   set par(justify: true, first-line-indent: 1em)
