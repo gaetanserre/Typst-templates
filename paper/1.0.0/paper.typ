@@ -195,12 +195,12 @@
 /*************************************************************************************************/
 
 /***LEAN***/
-#let lean_font(cont) = text(font: "Menlo", size: 9pt, cont)
+#let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 9pt, cont)
 
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "Menlo", size: 9pt)
+  set text(font: "FiraCode Nerd Font", size: 9pt)
   let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
