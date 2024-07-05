@@ -197,29 +197,30 @@
 /*************************************************************************************************/
 
 /***LEAN***/
-#let lean_font(cont) = text(font: "Menlo", size: 25pt, cont)
+#let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 25pt, cont)
 
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "Menlo", size: 25pt)
-  let reg_comment = regex(`(\s*\/-(.|\n)*-\/)|(\s*--.*)`.text)
+  set text(font: "FiraCode Nerd Font", size: 25pt)
+  let reg_comment = regex(`(\/-[^-/]*-\/)|(--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
 
   let print_comment(comment) = {
     set par(first-line-indent: 0em)
     show regex("[^\*]\*[^\*]+\*(\n | [^\*])"): set text(style: "italic", fill: black)
+    show regex("`.+`"): set text(fill: rgb("#ad7fa8"))
     show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: black)
     text(fill: rgb("#6a737d"), comment)
   }
 
   let print_code(code) = {
     set par(first-line-indent: 0em)
-    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show|class|instance|where)(\s|$)"): set text(fill: rgb("#d73a4a"))
-    show regex("Type"): set text(fill: rgb("#d73a4a"))
-    show regex("(lemma|theorem|def|class)\s\w+"): set text(fill: rgb("#6f42c1"))
-    show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#4056e9"))
+    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show|class|instance|where)(\s|$)"): set text(fill: rgb("#8b3fef"))
+    show regex("Type"): set text(fill: rgb("#8b3fef"))
+    show regex("(lemma|theorem|def|class)\s\w+"): set text(fill: rgb("#3475f5"))
+    show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#d4244a"))
     code
   }
   
@@ -290,6 +291,8 @@
   background: none,
   doc,
 ) = {
+
+  let sans_serif_font = "Noto Sans"
   
   // Set rules
   set page(
@@ -358,7 +361,7 @@
         if it.level >= 2 {30pt}
         else {50pt}
       }
-      set text(size: size)
+      set text(size: size, font: sans_serif_font)
       v(0.5em)
       accent(it.body)
       v(0.5em)
@@ -372,15 +375,16 @@
 
   // Title & subtitle
   align(left, {
-    text(size: 70pt, fill: white)[#title]
+    text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font)[#title]
     if subtitle != none {
-      text(72pt)[ \ #emph(subtitle)]
+      text(30pt)[ \ #emph(subtitle)]
      }
   })
 
   // Authors
   if authors == none {
-      align(left, text(size: 50pt, fill: white)[
+      v(-1em)
+      align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
         Gaëtan Serré \
         #text(size: 30pt)[
           École Normale Supérieure de Paris-Saclay, Centre Borelli, Team MLMDA
@@ -388,7 +392,7 @@
       ])
   } else {
     for author in authors {
-      align(center, text(72pt)[
+      align(center, text(size: 50pt, font: sans_serif_font)[
         #author.name \
         #author.affiliation \
         #text(font: "CMU Typewriter Text")[
