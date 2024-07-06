@@ -249,21 +249,18 @@
   )
 }
 
-#let grad_color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57))
+#let color_left = rgb("#665bad")
+#let color_right = rgb("#b6a4da")
+#let grad_color = gradient.linear(color_left, color_right)
 #let accent(it) = locate(loc => {
   let color = if loc.position().at("x").cm() < 84.1 / 2 {
-    rgb(63, 78, 155)
+    color_left
   } else {
-    rgb(233, 80, 57)
+    color_right
   }
   set text(fill: color, weight: "bold")
   it
 })
-
-/* {
- set text(fill: rgb(63, 78, 155), weight: "bold")
- it
-} */
 
 #let gen_bibliography(references: "") = {
   align(left)[
