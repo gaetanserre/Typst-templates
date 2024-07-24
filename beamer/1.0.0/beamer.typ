@@ -44,6 +44,9 @@
   return bib_page_nb - 1
 }
 
+#let s_title_color = state("title_color", rgb("#503fa1"))
+#let s_subtitle_color = state("subtitle_color", rgb("#937bf1"))
+
 #let has_previous_title(title) = {
   let headings = query(selector(heading).before(here()))
   for heading in headings {
@@ -54,18 +57,19 @@
   return false
 }
 
-#let title_style(title, title_color: rgb("#6e4e80")) = {
-  text(size: 25pt, fill: title_color, title)
+#let title_style(title) = context {
+  text(size: 25pt, fill: s_title_color.final(), [#v(-0.5em) #title])
 }
 
-#let subtitle_style(subtitle, subtitle_color: rgb("#9384d1")) = {
-  text(style: "italic", fill: subtitle_color, subtitle)
+#let subtitle_style(subtitle) = context {
+  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #subtitle])
 }
 
 #let slide(
   title: none,
   subtitle: none,
   content: none,
+  block_align: center,
   breakpage: true,
 ) = context {
     set par(leading: 20pt)
@@ -90,7 +94,7 @@
 
     set par(leading: 0.65em)
 
-    align(center + horizon, box([
+    align(block_align + horizon, box([
       #content
     ]))
 
@@ -102,6 +106,7 @@
 #let columns_slide(
   title: none,
   subtitle: none,
+  block_align: center,
   contents: (),
   common_content: none,
   columns: none,
@@ -126,6 +131,7 @@
   slide(
     title: title,
     subtitle: subtitle,
+    block_align: block_align,
     content: content,
     breakpage: breakpage,
   )
@@ -233,9 +239,9 @@
   }) 
 }
 
-#let thanks_slide(title_color: rgb("#6e4e80")) = {
-  set page(footer: [])
-  align(center + horizon, text(size: 30pt, fill: title_color, [Thank you for your attention!]))
+#let thanks_slide() = {
+  set page(footer: [], background: none)
+  align(center + horizon, text(size: 30pt, fill: rgb("#9e517b"), [Thank you for your attention!]))
 }
 
 /***********************************MATHS ENVIRONMENT*********************************************/
@@ -389,6 +395,7 @@
   output: none,
   content: none
 ) = {
+  set text(font: "New Computer Modern")
   align(center, 
     block(width: auto, {
       align(left, {
@@ -474,15 +481,14 @@
   )
 }
 
+#let grad_color = gradient.linear(rgb("#665bad"), rgb("#b6a4da"), relative: "parent")
 
 #let config(
-  background_color: rgb("#03045e"),
   background: none,
-  title_color: rgb("#6e4e80"),
-  subtitle_color: rgb("#9384d1"),
-  text_color: rgb("#caf0f8"),
+  title_color: rgb("#503fa1"),
+  subtitle_color: rgb("#937bf1"),
+  text_color: rgb("#000000"),
   footer: context {
-    let color = gradient.linear(rgb(63, 78, 155), rgb(233, 80, 57), relative: "parent")
     let page_nb = counter("page").at(here()).at(0)
     let last_page = get_last_page_before_bib(here())
     let max_size_bar = 50pt
@@ -492,7 +498,7 @@
       if in_bib(here()) {
         []
       } else {
-        align(right, box(
+        align(left, box(
           width: max_size_bar,
           height: 6pt,
           fill: rgb("#eeeeee"),
@@ -500,18 +506,17 @@
           align(left, rect(
             width: current_size_bar,
             height: 6pt,
-            fill: color,
+            fill: grad_color,
             radius: 3pt
           ))
         ))
       }
     }
-
     grid(
       columns: (33%, 33%, 33%),
-      [],
-      align(center, text(size: 9pt, [#page_nb -- G. Serré - Centre Borelli])),
-      box
+      box,
+      align(center, text(size: 9pt, [G. Serré - Centre Borelli])),
+      align(right, text(size: 9pt, [#page_nb]))
     )
   },
   lang: "en",
@@ -521,13 +526,7 @@
     paper: "presentation-16-9",
     numbering: "1",
     footer: footer,
-    background: {
-      if background != none {
-        background
-      } else {
-        rect(width: 100%, height: 100%, fill: background_color, stroke: none)
-      }
-    }
+    background: background
   )
 
   // Set rules
@@ -536,7 +535,7 @@
     justify: true,
   )
 
-  set text(font: "New Computer Modern", size: 15pt, fill: text_color, lang: lang)
+  set text(font: "Museo", size: 15pt, fill: text_color, lang: lang)
 
   set heading(numbering: none)
 
@@ -544,7 +543,7 @@
 
   set math.equation(numbering: "(1)")
 
-  set list(marker: ("--", $arrow.r.curve$))
+  set list(marker: ($gt.tri$, $arrow.r.curve$))
   set enum(indent: 1em)
 
   // Reference style
@@ -581,16 +580,25 @@
   show heading: it => {
     set align(left)
     if it.level == 1 {
-      set text(25pt, font: "CMU Serif", weight: "regular", fill: title_color)
-      it.body
+      set text(25pt, weight: "regular", fill: s_title_color.final())
+      [
+        #s_title_color.update(title_color)
+        #s_subtitle_color.update(subtitle_color)
+        #v(-0.5em)
+      ]
+      if it.body == [Bibliography] {
+        it.body
+        v(1.5em)
+      } else {
+        it.body
+      }
     } else if it.level == 2 {
-      set par(first-line-indent: 0em)
-      set text(15pt, font: "CMU Serif", style: "italic", weight: "regular", fill: subtitle_color)
+      set text(15pt, style: "italic", weight: "regular", fill: s_subtitle_color.final())
+      v(-0.5em)
       it.body
     } else {
       it.body
     }
-    
   }
 
   doc
