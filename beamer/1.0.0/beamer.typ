@@ -24,7 +24,7 @@
 
 #let in_bib(loc) = {
   let previous_heading_bodies = query(selector(heading).before(loc), loc).map(h => {h.body})
-  return previous_heading_bodies.contains([Bibliography])
+  return previous_heading_bodies.contains([Bibliography]) or previous_heading_bodies.contains([Bibliographie])
 }
 
 #let get_last_page_before_bib(loc) = {
@@ -34,12 +34,10 @@
 
   let headings = query(selector(heading).after(loc), loc)
   let bib_page_nb = counter("page").final(loc).at(0)
-  let flag = false
   for heading in headings {
-    if heading.body == [Bibliography] {
+    if heading.body == [Bibliography] or heading.body == [Bibliographie] {
       bib_page_nb = counter("page").at(heading.location()).at(0)
     }
-    flag = heading.body == [Bibliography]
   }
   return bib_page_nb - 1
 }
@@ -586,7 +584,7 @@
         #s_subtitle_color.update(subtitle_color)
         #v(-0.5em)
       ]
-      if it.body == [Bibliography] {
+      if it.body == [Bibliography] or it.body == [Bibliographie] {
         it.body
         v(1.5em)
       } else {
