@@ -22,9 +22,13 @@
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
+#let s_lang = state("lang", "en")
+#let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
+#let outline_wording = ("en": [Outline], "fr": [Table des matières])
+
 #let in_bib(loc) = {
   let previous_heading_bodies = query(selector(heading).before(loc), loc).map(h => {h.body})
-  return previous_heading_bodies.contains([Bibliography]) or previous_heading_bodies.contains([Bibliographie])
+  return previous_heading_bodies.contains(bib_wording.at(s_lang.at(loc)))
 }
 
 #let get_last_page_before_bib(loc) = {
@@ -35,7 +39,7 @@
   let headings = query(selector(heading).after(loc), loc)
   let bib_page_nb = counter("page").final(loc).at(0)
   for heading in headings {
-    if heading.body == [Bibliography] or heading.body == [Bibliographie] {
+    if heading.body == s_lang.at(loc) {
       bib_page_nb = counter("page").at(heading.location()).at(0)
     }
   }
@@ -67,7 +71,8 @@
   title: none,
   subtitle: none,
   content: none,
-  block_align: center,
+  h_block_align: center,
+  v_block_align: horizon,
   breakpage: true,
 ) = context {
     set par(leading: 20pt)
@@ -92,7 +97,7 @@
 
     set par(leading: 0.65em)
 
-    align(block_align + horizon, box([
+    align(h_block_align + v_block_align, box([
       #content
     ]))
 
@@ -104,7 +109,8 @@
 #let columns_slide(
   title: none,
   subtitle: none,
-  block_align: center,
+  h_block_align: center,
+  v_block_align: horizon,
   contents: (),
   common_content: none,
   columns: none,
@@ -129,7 +135,8 @@
   slide(
     title: title,
     subtitle: subtitle,
-    block_align: block_align,
+    h_block_align: center,
+    v_block_align: horizon,
     content: content,
     breakpage: breakpage,
   )
@@ -186,7 +193,7 @@
   emails: [Emails],
   date: none,
   background: none) = {
-    set page(footer: [], background: background)
+    set page(footer: [], background: none)
     slide(
       title: none,
       content: [
@@ -207,19 +214,13 @@
   }
 }
 
-#let outline_dict_lang = (
-  "en": "Outline",
-  "fr": "Table des matières",
-)
-
 #let outline_slide(lang: "en", size: none) = {
+  set page(footer: [], background: [])
   set par(first-line-indent: 0em)
-  //align(center, text(size: 25pt, [Outline\ ]))
-  [= #outline_dict_lang.at(lang)]
+  [= #outline_wording.at(lang)]
   locate(loc => {
     let headings = query(selector(heading).after(loc), loc)
     let unique_headings = ()
-    //let counter_heading = counter(page).at(loc).at(0)
     align(top,
     for heading in headings {
       if heading.body not in unique_headings {
@@ -233,7 +234,6 @@
         }
       }
     })
-    pagebreak()
   }) 
 }
 
@@ -245,15 +245,14 @@
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
-#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = {
-  let counter = counter(supplement)
-  counter.step()
+#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = context {
+  //set text(font: "New Computer Modern")
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
-        [*#supplement #counter.display().* ] + it
+      [*#supplement(here())* ] + it
     } else {
-      [*#supplement #counter.display()* (#emph(name)). ] + it
+      [*#supplement(here())* (#emph(name)). ] + it
     }
   }
   let fig = figure(
@@ -265,8 +264,8 @@
       align(left, body)
     ),
     caption: none,
-    kind: supplement,
-    supplement: supplement,
+    kind: supplement(here()),
+    supplement: supplement(here()),
   )
   if lb != none [
     #fig
@@ -278,19 +277,42 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#b287a3"), eq_numbering)
+#let lem_wording  = ("en": "Lemma", "fr": "Lemme")
+#let prop_wording = ("en": "Proposition", "fr": "Proposition")
+#let thm_wording  = ("en": "Theorem", "fr": "Théorème")
+#let cor_wording  = ("en": "Corollary", "fr": "Corollaire")
+#let def_wording  = ("en": "Definition", "fr": "Définition")
+#let re_wording   = ("en": "Remark", "fr": "Remarque")
+#let ex_wording   = ("en": "Example", "fr": "Exemple")
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#b1255d"), eq_numbering)
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#5f072a"), eq_numbering)
+#let lemma(name, it, label: none, eq_numbering: none) = {
+  math_block(l => lem_wording.at(s_lang.at(l)), name, it, label, rgb("#b287a3"), eq_numbering)
+}
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
+#let proposition(name, it, label: none, eq_numbering: none) = {
+  math_block(l =>prop_wording.at(s_lang.at(l)), name, it, label, rgb("#b1255d"), eq_numbering)
+}
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#bfb1c1"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = {
+  math_block(l => thm_wording.at(s_lang.at(l)), name, it, label, rgb("#5f072a"), eq_numbering)
+}
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380b6"), eq_numbering)
+#let corollary(name, it, label: none, eq_numbering: none) = {
+  math_block(l => cor_wording.at(s_lang.at(l)), name, it, label, rgb("#ffc300"), eq_numbering)
+}
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = {
+  math_block(l => def_wording.at(s_lang.at(l)), name, it, label, rgb("#bfb1c1"), eq_numbering)
+}
+
+#let remark(name, it, label: none, eq_numbering: none) = {
+  math_block(l => re_wording.at(s_lang.at(l)), name, it, label, rgb("#8380b6"), eq_numbering)
+}
+
+#let example(it, label: none, eq_numbering: none) = {
+  math_block(l => ex_wording.at(s_lang.at(l)), none, it, label, rgb("#9bc4cb"), eq_numbering)
+}
 
 #let proof(it) = {
   set par(first-line-indent: 0em)
@@ -486,6 +508,7 @@
   title_color: rgb("#503fa1"),
   subtitle_color: rgb("#937bf1"),
   text_color: rgb("#000000"),
+  lang: "en",
   footer: context {
     let page_nb = counter("page").at(here()).at(0)
     let last_page = get_last_page_before_bib(here())
@@ -517,7 +540,6 @@
       align(right, text(size: 9pt, [#page_nb]))
     )
   },
-  lang: "en",
   doc
 ) = {
   set page(
@@ -579,12 +601,11 @@
     set align(left)
     if it.level == 1 {
       set text(25pt, weight: "regular", fill: s_title_color.final())
-      [
-        #s_title_color.update(title_color)
-        #s_subtitle_color.update(subtitle_color)
-        #v(-0.5em)
-      ]
-      if it.body == [Bibliography] or it.body == [Bibliographie] {
+      s_title_color.update(title_color)
+      s_subtitle_color.update(subtitle_color)
+      s_lang.update(lang)
+      v(-0.5em)
+      if it.body == bib_wording.at(s_lang.at(here())) {
         it.body
         v(1.5em)
       } else {
@@ -598,6 +619,6 @@
       it.body
     }
   }
-
+  
   doc
 }
