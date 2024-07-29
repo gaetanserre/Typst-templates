@@ -197,12 +197,12 @@
 /*************************************************************************************************/
 
 /***LEAN***/
-#let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 25pt, cont)
+// #let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 12pt, cont)
 
-#let lean_block(cont) = {
-  set par(first-line-indent: 0em)
+#let lean_block(it) = {
+  /* set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "FiraCode Nerd Font", size: 25pt)
+  set text(font: "FiraCode Nerd Font", size: 12pt)
   let reg_comment = regex(`(\/-[^-/]*-\/)|(--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
@@ -238,14 +238,14 @@
   }
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
-  }
+  } */
   
   block(
     width:100%,
     stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
     fill: rgb("#eeeeee"),
     inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, final_content)
+    align(left, raw(lang: "lean4", it))
   )
 }
 
@@ -329,6 +329,8 @@
 
   set list(marker: ("--", $arrow.r.curve$))
 
+  set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
+
   // Show rules
 
   show ref: set text(fill: rgb("#ff0000"))
@@ -369,6 +371,9 @@
     set text(size: 25pt)
     it
   }
+
+  show raw: set text(font: "FiraCode Nerd Font")
+
 
   // Title & subtitle
   align(left, {

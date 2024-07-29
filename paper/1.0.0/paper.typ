@@ -195,10 +195,10 @@
 /*************************************************************************************************/
 
 /***LEAN***/
-#let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 9pt, cont)
+// #let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 9pt, cont)
 
-#let lean_block(cont) = {
-  set par(first-line-indent: 0em)
+#let lean_block(it) = {
+  /* set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
   set text(font: "FiraCode Nerd Font", size: 9pt)
   let reg_comment = regex(`(\/-[^-/]*-\/)|(--.*)`.text)
@@ -236,14 +236,14 @@
   }
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
-  }
+  } */
   
   block(
     width:100%,
     stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
     fill: rgb("#eeeeee"),
     inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, final_content)
+    align(left, raw(lang: "lean4", it))
   )
 }
 
@@ -340,6 +340,7 @@
   })
 
   set outline(indent: true, fill: repeat([.$space$]))
+  set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
 
   // Show rules
 
@@ -347,8 +348,8 @@
   show footnote: set text(fill: rgb("#ff0000"))
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
-
   show math.equation: set text(font: "New Computer Modern Math")
+  show raw: set text(font: "FiraCode Nerd Font")
   
 
   // Algorithm & Lean figure
