@@ -49,10 +49,10 @@
 #let s_title_color = state("title_color", rgb("#503fa1"))
 #let s_subtitle_color = state("subtitle_color", rgb("#937bf1"))
 
-#let has_previous_title(title) = {
+#let has_previous_title(title, level: 1) = {
   let headings = query(selector(heading).before(here()))
   for heading in headings {
-    if heading.body == title {
+    if heading.body == title and heading.level == level {
       return true
     }
   }
@@ -85,7 +85,7 @@
     }
 
     if subtitle != none {
-      if has_previous_title(subtitle) {
+      if has_previous_title(subtitle, level: 2) {
         linebreak() + subtitle_style(subtitle)
       } else {
         [== #subtitle]
@@ -214,14 +214,14 @@
   }
 }
 
-#let outline_slide(lang: "en", size: none) = {
+#let outline_slide(size: none, v_align: horizon) = context {
   set page(footer: [], background: [])
   set par(first-line-indent: 0em)
-  [= #outline_wording.at(lang)]
+  [= #outline_wording.at(s_lang.at(here()))]
   locate(loc => {
     let headings = query(selector(heading).after(loc), loc)
     let unique_headings = ()
-    align(top,
+    align(v_align,
     for heading in headings {
       if heading.body not in unique_headings {
         let heading_loc = heading.location()
@@ -250,9 +250,9 @@
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
-      [*#supplement(here())* ] + it
+      [*#supplement(here()).* ] + it
     } else {
-      [*#supplement(here())* (#emph(name)). ] + it
+      [*#supplement(here())* (#emph(name))*.* ] + it
     }
   }
   let fig = figure(
@@ -454,7 +454,7 @@
 #let lean_block(cont) = {
   set par(first-line-indent: 0em)
   show par: set block(spacing: 0em)
-  set text(font: "FiraCode Nerd Font", size: 25pt)
+  set text(font: "FiraCode Nerd Font", size: 12pt)
   let reg_comment = regex(`(\/-[^-/]*-\/)|(--.*)`.text)
   let comment_matches = cont.matches(reg_comment)
   let cont_without_comments = cont.split(reg_comment)
@@ -503,43 +503,51 @@
 
 #let grad_color = gradient.linear(rgb("#665bad"), rgb("#b6a4da"), relative: "parent")
 
+#let footer(loc) = {
+  let page_nb = counter("page").at(loc).at(0)
+
+  let hs = query(selector(heading).after(loc), loc).map(h => {h.body})
+
+  if page_nb == 0 or hs.at(0, default: []) == outline_wording.at(s_lang.at(loc)) {
+    return []
+  }
+  let last_page = get_last_page_before_bib(loc)
+  let max_size_bar = 50pt
+  let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
+
+  let box = {
+    if in_bib(loc) {
+      []
+    } else {
+      align(left, box(
+        width: max_size_bar,
+        height: 6pt,
+        fill: rgb("#eeeeee"),
+        radius: 3pt,
+        align(left, rect(
+          width: current_size_bar,
+          height: 6pt,
+          fill: grad_color,
+          radius: 3pt
+        ))
+      ))
+    }
+  }
+  grid(
+    columns: (33%, 33%, 33%),
+    box,
+    align(center, text(size: 9pt, [G. Serré - Centre Borelli])),
+    align(right, text(size: 9pt, [#page_nb]))
+  )
+}
+
 #let config(
   background: none,
   title_color: rgb("#503fa1"),
   subtitle_color: rgb("#937bf1"),
   text_color: rgb("#000000"),
   lang: "en",
-  footer: context {
-    let page_nb = counter("page").at(here()).at(0)
-    let last_page = get_last_page_before_bib(here())
-    let max_size_bar = 50pt
-    let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
-
-    let box = {
-      if in_bib(here()) {
-        []
-      } else {
-        align(left, box(
-          width: max_size_bar,
-          height: 6pt,
-          fill: rgb("#eeeeee"),
-          radius: 3pt,
-          align(left, rect(
-            width: current_size_bar,
-            height: 6pt,
-            fill: grad_color,
-            radius: 3pt
-          ))
-        ))
-      }
-    }
-    grid(
-      columns: (33%, 33%, 33%),
-      box,
-      align(center, text(size: 9pt, [G. Serré - Centre Borelli])),
-      align(right, text(size: 9pt, [#page_nb]))
-    )
-  },
+  footer: context footer(here()),
   doc
 ) = {
   set page(
@@ -601,9 +609,6 @@
     set align(left)
     if it.level == 1 {
       set text(25pt, weight: "regular", fill: s_title_color.final())
-      s_title_color.update(title_color)
-      s_subtitle_color.update(subtitle_color)
-      s_lang.update(lang)
       v(-0.5em)
       if it.body == bib_wording.at(s_lang.at(here())) {
         it.body
@@ -619,6 +624,8 @@
       it.body
     }
   }
-  
+  s_title_color.update(title_color)
+  s_subtitle_color.update(subtitle_color)
+  s_lang.update(lang)
   doc
 }
