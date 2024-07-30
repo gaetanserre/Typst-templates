@@ -245,7 +245,7 @@
 /*************************************************************************************************/
 
 #let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = context {
-  //set text(font: "New Computer Modern")
+  set text(font: "New Computer Modern")
   let body = {
     set math.equation(numbering: eq_numbering)
     if name == none {
@@ -258,7 +258,7 @@
     rect(
       width:100%,
       stroke: ("left": 1pt+stroke_color, "rest": none),
-      fill: rgb("#eeeeee"),
+      fill: rgb("#f8f6fb"),
       inset: (bottom: 10pt, rest: 5pt),
       align(left, body)
     ),
@@ -494,7 +494,7 @@
   block(
     width:100%,
     stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
-    fill: rgb("#eeeeee"),
+    fill: rgb("#f8f6fb"),
     inset: (bottom: 0.7em, rest: 0.5em),
     align(left, raw(lang: "lean4", it))
   )
