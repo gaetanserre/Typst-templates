@@ -46,8 +46,10 @@
   return bib_page_nb - 1
 }
 
-#let s_title_color = state("title_color", rgb("#503fa1"))
-#let s_subtitle_color = state("subtitle_color", rgb("#937bf1"))
+#let title_color = rgb("#503fa1")
+#let subtitle_color = rgb("#937bf1")
+#let s_title_color = state("title_color", title_color)
+#let s_subtitle_color = state("subtitle_color", subtitle_color)
 
 #let has_previous_title(title, level: 1) = {
   let headings = query(selector(heading).before(here()))
@@ -213,26 +215,40 @@
   }
 }
 
+#let check_heading_in_unique(h, hs) = {
+  if h.body in hs {
+    let elem = hs.find(e => e.body == h.body)
+    return elem.level == h.level
+  }
+  return false
+}
+
 #let outline_slide(size: none, v_align: horizon) = context {
   set page(footer: [], background: [])
   set par(first-line-indent: 0em)
   [= #outline_wording.at(s_lang.at(here()))]
-  locate(loc => {
-    let headings = query(selector(heading).after(loc), loc)
-    let unique_headings = ()
-    align(v_align,
-    for heading in headings {
-      if heading.body not in unique_headings {
-        let heading_loc = heading.location()
-        unique_headings += (heading.body,)
-        let content = get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#(heading_loc.page() - 1)] + [ \ ]
-        if size != none {
-          text(size: size, content)
+  let headings = query(selector(heading).after(here()), here()).slice(1, none)
+  let unique_headings = ()
+  align(v_align,
+  for heading in headings {
+    if not check_heading_in_unique(heading, unique_headings) {
+      let heading_loc = heading.location()
+      unique_headings += (heading,)
+      let nb_page = {
+        let tmp = counter("page").at(heading_loc).at(0)
+        if heading.body == bib_wording.at(s_lang.at(here())) {
+          tmp
         } else {
-          content
+          tmp + 1
         }
+      }      
+      let content = get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#nb_page] + [ \ ]
+      if size != none {
+        text(size: size, content)
+      } else {
+        content
       }
-    })
+    }
   }) 
 }
 
@@ -535,7 +551,7 @@
   grid(
     columns: (33%, 33%, 33%),
     box,
-    align(center, text(size: 9pt, [G. Serré - Centre Borelli])),
+    align(center, text(size: 9pt, [G. Serré --- Centre Borelli])),
     align(right, text(size: 9pt, [#page_nb]))
   )
 }
@@ -543,8 +559,8 @@
 #let config(
   background: none,
   title_background: none,
-  title_color: rgb("#503fa1"),
-  subtitle_color: rgb("#937bf1"),
+  title_color: title_color,
+  subtitle_color: subtitle_color,
   text_color: rgb("#000000"),
   lang: "en",
   footer: context footer(here()),
@@ -596,13 +612,20 @@
 
   set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
 
+  set footnote.entry(separator: align(right, line(length: 20%, stroke: 1pt + title_color)))
+
   // Show rules
   show ref: set text(fill: rgb("#ff0000"))
-  show footnote: set text(fill: rgb("#ff0000"))
-  show link: set text(fill: rgb("#7209b7"))
+  show link: set text(fill: subtitle_color)
   show cite: set text(fill: rgb("#4361ee"))
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
+
+  show footnote: set text(fill: subtitle_color)
+  show footnote.entry: it => {
+    set text(fill: subtitle_color, size: 10pt)
+    align(right, it)
+  }
 
   // Algorithm & Lean figure
   show figure: fig => {
