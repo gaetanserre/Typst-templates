@@ -204,7 +204,7 @@
         #emails\
         #date
       ],
-      breakpage: false
+      breakpage: true
     )
     counter("page").update(0)
 }
