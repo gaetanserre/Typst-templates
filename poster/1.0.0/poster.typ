@@ -389,7 +389,7 @@
       align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
         Gaëtan Serré \
         #text(size: 30pt)[
-          École Normale Supérieure de Paris-Saclay, Centre Borelli, Team MLMDA
+          École Normale Supérieure de Paris-Saclay, Centre Borelli, MLMDA Team
         ]
       ])
   } else {
