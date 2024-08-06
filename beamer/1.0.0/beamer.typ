@@ -117,6 +117,7 @@
   common_content: none,
   columns: none,
   column_gutter: 2em,
+  stroke: none,
   breakpage: true,
 ) = {
 
@@ -130,6 +131,7 @@
   let content = grid(
     columns: columns,
     column-gutter: column_gutter,
+    stroke: stroke,
     rows: (auto),
     ..contents
   ) + common_content
@@ -204,7 +206,7 @@
         #emails\
         #date
       ],
-      breakpage: true
+      breakpage: false
     )
     counter("page").update(0)
 }
