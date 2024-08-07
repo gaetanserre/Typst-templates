@@ -589,7 +589,7 @@
     justify: true,
   )
 
-  set text(font: "Museo", size: 15pt, fill: text_color, lang: lang)
+  set text(font: "Noto Sans", size: 15pt, fill: text_color, lang: lang)
 
   set heading(numbering: none)
 

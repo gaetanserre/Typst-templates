@@ -33,7 +33,7 @@
     rect(
       width:100%,
       stroke: ("left": 1pt+stroke_color, "rest": none),
-      fill: rgb("#eeeeee"),
+      fill: rgb("#f8f6fb"),
       inset: (bottom: 0.7em, rest: 0.5em),
       align(left, body)
     ),
@@ -84,7 +84,7 @@
   comment: none,
   content: [],
   has_stroke: true,
-  inset: 1em
+  inset: 0.5em
 ) = {
   if comment == none {
     identifier
@@ -92,14 +92,14 @@
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
   block(width: auto, above: 0.5em, below:0.5em, {
-    let stroke = ("left": 1pt, "rest": none)
+    let stroke = (left: black + 1pt, rest: none)
     if not has_stroke {
       stroke = none
     }
     rect(
       stroke: stroke,
       outset: -0.1em,
-      inset: (right: 0em, rest: inset),
+      inset: (right: 0em, left: 1em, rest: inset),
       )[#content]
   })
 }
@@ -119,7 +119,7 @@
   comment: none,
   content: [],
 ) = {
-    code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
+  code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
   [*end while*]
 }
 
@@ -171,7 +171,7 @@
         //show line: set block(above: 0.4em, below: 0.4em)
         set par(first-line-indent: 0em)
         box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
-        [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
+        [*Algorithm:* #smallcaps(name) \ ]
         box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
         if input != none {
           [*Input:*]
@@ -243,14 +243,15 @@
   block(
     width:100%,
     stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
-    fill: rgb("#eeeeee"),
+    fill: rgb("#f8f6fb"),
     inset: (bottom: 0.7em, rest: 0.5em),
     align(left, raw(lang: "lean4", it))
   )
 }
 
+#let gray(it) = text(fill: rgb("#888888"), it)
 #let color_left = rgb("#665bad")
-#let color_right = rgb("#b6a4da")
+#let color_right = rgb("#d3c8e9")
 #let grad_color = gradient.linear(color_left, color_right)
 #let accent(it) = locate(loc => {
   let color = if loc.position().at("x").cm() < 84.1 / 2 {
@@ -297,7 +298,7 @@
     header: none,
     numbering: none,
     background: background,
-    margin: (top: 3em, bottom: 7em, rest: 3em),
+    margin: (top: 3em, bottom: 2em, rest: 3em),
   )
 
   set par(justify: true, first-line-indent: 0em)
@@ -317,17 +318,17 @@
   set ref(supplement: it => {
     let fig = it.func()
     if fig == math.equation {
-      text(fill: black, "Eq.")
+      [Eq.]
     }
     
     else if fig == figure {
-      text(fill: black, it.supplement)
+      gray(it.supplement)
     }
   })
 
   set outline(indent: true, fill: repeat([.$space$]))
 
-  set list(marker: ("--", $arrow.r.curve$))
+  set list(marker: ($gt.tri$, $arrow.r.curve$))
 
   set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
 
@@ -340,15 +341,15 @@
 
   show math.equation: set text(font: "New Computer Modern Math")
   
-
   // Algorithm & Lean figure
   show figure: fig => {
     if fig.kind == "algorithm" {
       fig.body
     } else if fig.kind == "leancode" {
       counter(fig.kind).step()
-      fig.body + align(center, [#fig.supplement #counter(fig.kind).display(): #fig.caption])
+      fig.body + align(center, [#fig.supplement #counter(fig.kind).display(): fig.caption])
     } else {
+      show figure.caption: set text(fill: rgb("#888888"))
       fig
     }
   }
@@ -377,7 +378,7 @@
 
   // Title & subtitle
   align(left, {
-    text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font)[#title]
+    text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font, title)
     if subtitle != none {
       text(30pt)[ \ #emph(subtitle)]
      }
@@ -394,12 +395,17 @@
       ])
   } else {
     for author in authors {
-      align(center, text(size: 50pt, font: sans_serif_font)[
+      v(-1em)
+      align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
         #author.name \
-        #author.affiliation \
-        #text(font: "CMU Typewriter Text")[
-          #link("mailto:" + author.email)
-        ]
+        #text(size: 30pt,[
+          #author.affiliation \
+          #v(-1em)
+          #text(font: "CMU Typewriter Text")[
+            #link("mailto:" + author.email)
+          ]
+        ])
+        
       ])
     }
   }
