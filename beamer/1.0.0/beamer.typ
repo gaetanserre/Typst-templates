@@ -51,10 +51,24 @@
 #let s_title_color = state("title_color", title_color)
 #let s_subtitle_color = state("subtitle_color", subtitle_color)
 
-#let has_previous_title(title, level: 1) = {
+#let has_previous_title(title) = {
   let headings = query(selector(heading).before(here()))
   for heading in headings {
-    if heading.body == title and heading.level == level {
+    if heading.body == title {
+      return true
+    }
+  }
+  return false
+}
+
+#let has_previous_subtitle(title, subtitle) = {
+  let headings = query(selector(heading).before(here()))
+  let h = none
+  for i in range(headings.len()) {
+    if headings.at(i).level == 1 or h == none {
+      h = headings.at(i)
+    }
+    if headings.at(i).body == subtitle and headings.at(i).level == 2 and h.body == title {
       return true
     }
   }
@@ -87,8 +101,8 @@
     }
 
     if subtitle != none {
-      if has_previous_title(subtitle, level: 2) {
-        linebreak() + subtitle_style(subtitle)
+      if has_previous_subtitle(title, subtitle) {
+        subtitle_style(subtitle)
       } else {
         [== #subtitle]
         counter("page").step()
@@ -200,8 +214,8 @@
     slide(
       title: none,
       content: [
-        #text(size: 35pt, [#title])\
-        #emph(subtitle)\
+        #text(size: 30pt, [#title])\
+        #text(15pt, style: "italic", subtitle)\
         #authors\
         #emails\
         #date
@@ -518,9 +532,10 @@
   )
 }
 
+#let gray(it) = text(fill: rgb("#888888"), it)
 #let grad_color = gradient.linear(rgb("#665bad"), rgb("#b6a4da"), relative: "parent")
 
-#let footer(loc) = {
+#let footer(loc, running_author) = {
   let page_nb = counter("page").at(loc).at(0)
 
   let h = query(selector(heading).after(loc), loc).map(h => {h.body}).at(0, default: [])
@@ -553,7 +568,7 @@
   grid(
     columns: (33%, 33%, 33%),
     box,
-    align(center, text(size: 9pt, [G. Serré --- Centre Borelli])),
+    align(center, text(size: 9pt, running_author)),
     align(right, text(size: 9pt, [#page_nb]))
   )
 }
@@ -565,7 +580,7 @@
   subtitle_color: subtitle_color,
   text_color: rgb("#000000"),
   lang: "en",
-  footer: context footer(here()),
+  footer: context footer(here(), [G. Serré --- Centre Borelli]),
   doc
 ) = {
   set page(
@@ -608,7 +623,7 @@
     }
     
     else if fig == figure {
-      text(fill: black, it.supplement)
+      gray(it.supplement)
     }
   })
 
@@ -637,6 +652,7 @@
       counter(fig.kind).step()
       fig.body + align(center, [#fig.supplement #counter(fig.kind).display(): #fig.caption])
     } else {
+      show figure.caption: set text(12pt, fill: rgb("#888888"))
       fig
     }
   }
