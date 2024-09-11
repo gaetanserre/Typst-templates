@@ -107,7 +107,7 @@
         [== #subtitle]
         counter("page").step()
       }
-    } else {
+    } else if not has_previous_title(title) {
       counter("page").step()
     }
 
