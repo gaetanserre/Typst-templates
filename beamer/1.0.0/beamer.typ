@@ -25,6 +25,10 @@
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
+#let thanks_wording = (
+  "en": [Thank you for your #text(fill: rgb("#937bf1"),[attention])!],
+  "fr": [Merci pour votre #text(fill: rgb("#937bf1"),[attention]) !]
+)
 
 #let in_bib(loc) = {
   let previous_heading_bodies = query(selector(heading).before(loc), loc).map(h => {h.body})
@@ -268,9 +272,10 @@
   }) 
 }
 
-#let thanks_slide() = {
+#let thanks_slide() = context {
   set page(footer: [], background: none)
-  align(center + horizon, text(size: 30pt, fill: rgb("#9e517b"), [Thank you for your attention!]))
+  let wording = thanks_wording.at(s_lang.at(here()))
+  align(center + horizon, text(size: 20pt, wording))
 }
 
 /***********************************MATHS ENVIRONMENT*********************************************/
