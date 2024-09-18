@@ -84,7 +84,7 @@
 }
 
 #let subtitle_style(subtitle) = context {
-  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #subtitle #v(-0.55em)])
+  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #subtitle #v(-0.555em)])
 }
 
 #let slide(
@@ -276,6 +276,11 @@
   set page(footer: [], background: none)
   let wording = thanks_wording.at(s_lang.at(here()))
   align(center + horizon, text(size: 20pt, wording))
+}
+
+#let trans_slide(it, subtitle: none) = {
+  set page(footer: [], background: none)
+  align(center + horizon, text(size: 20pt, title_style(it) + subtitle_style(subtitle)))
 }
 
 /***********************************MATHS ENVIRONMENT*********************************************/
