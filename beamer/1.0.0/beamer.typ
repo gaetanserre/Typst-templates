@@ -84,7 +84,7 @@
 }
 
 #let subtitle_style(subtitle) = context {
-  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #subtitle])
+  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #subtitle #v(-0.55em)])
 }
 
 #let slide(
