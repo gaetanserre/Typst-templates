@@ -30,13 +30,13 @@
   "fr": [Merci pour votre #text(fill: rgb("#937bf1"),[attention]) !]
 )
 
-#let in_bib(loc) = {
+#let past_bib(loc) = {
   let previous_heading_bodies = query(selector(heading).before(loc), loc).map(h => {h.body})
   return previous_heading_bodies.contains(bib_wording.at(s_lang.at(loc)))
 }
 
 #let get_last_page_before_bib(loc) = {
-  if in_bib(loc) {
+  if past_bib(loc) {
     return counter("page").final(loc).at(0)
   }
 
@@ -558,7 +558,7 @@
   let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
 
   let box = {
-    if in_bib(loc) {
+    if past_bib(loc) {
       []
     } else {
       align(left, box(
