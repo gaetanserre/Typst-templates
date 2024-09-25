@@ -43,7 +43,7 @@
   let headings = query(selector(heading).after(loc), loc)
   let bib_page_nb = counter("page").final(loc).at(0)
   for heading in headings {
-    if heading.body == s_lang.at(loc) {
+    if heading.body == bib_wording.at(s_lang.at(loc)) {
       bib_page_nb = counter("page").at(heading.location()).at(0)
     }
   }
