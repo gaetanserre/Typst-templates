@@ -610,9 +610,7 @@
 
   // Set rules
 
-  set par(
-    justify: true,
-  )
+  set par(justify: true)
 
   set text(font: "Noto Sans", size: 15pt, fill: text_color, lang: lang)
 
