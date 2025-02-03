@@ -21,22 +21,34 @@
 #let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = {
   let counter = counter(supplement)
   counter.step()
-  let body = {
-    set math.equation(numbering: eq_numbering)
-    if name == none {
-        [*#supplement.* ] + it
+
+  set math.equation(numbering: eq_numbering)
+
+  let name_box = if name == none {
+      text(fill: stroke_color, [*#supplement*])
     } else {
-      [*#supplement* (#emph(name)). ] + it
+      text(fill: stroke_color, [*#supplement* -- #emph(name)])
     }
-  }
+
   let fig = figure(
-    rect(
-      width:100%,
-      stroke: ("left": 1pt+stroke_color, "rest": none),
+    [
+    #align(left,box(
       fill: rgb("#f8f6fb"),
-      inset: (bottom: 0.7em, rest: 0.5em),
-      align(left, body)
-    ),
+      inset: (bottom: 0.2em, rest: 0.5em),
+      stroke: (left: 5pt + stroke_color),
+      radius: (top-right: 0.3em),
+      name_box
+    ))
+    #v(-1.35em)
+    #set text(font: "New Computer Modern", size: 37pt)
+    #rect(
+      width:100%,
+      stroke: (left: 5pt + stroke_color),
+      fill: rgb("#f8f6fb"),
+      inset: (bottom: 1em, rest: 1em),
+      align(left, it)
+    )
+    ],
     caption: none,
     kind: supplement,
     supplement: supplement,
@@ -59,11 +71,11 @@
 
 #let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#bfb1c1"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#78a3ef"), eq_numbering)
 
 #let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380b6"), eq_numbering)
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
+#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#bfb1c1"), eq_numbering)
 
 #let proof(it) = {
   set par(first-line-indent: 0em)
@@ -253,15 +265,15 @@
 #let color_left = rgb("#665bad")
 #let color_right = rgb("#d3c8e9")
 #let grad_color = gradient.linear(color_left, color_right)
-#let accent(it) = locate(loc => {
-  let color = if loc.position().at("x").cm() < 84.1 / 2 {
+#let accent(it) = context {
+  let color = if here().position().at("x").cm() < 84.1 / 2 {
     color_left
   } else {
     color_right
   }
   set text(fill: color, weight: "bold")
   it
-})
+}
 
 #let gen_bibliography(references: "") = {
   align(left)[
@@ -303,7 +315,7 @@
 
   set par(justify: true, first-line-indent: 0em)
 
-  set text(font: "New Computer Modern", size: 33pt)
+  set text(font: sans_serif_font, size: 33pt)
 
   set heading(numbering: none)
 
@@ -364,7 +376,7 @@
       set text(size: size, font: sans_serif_font)
       v(0.5em)
       accent(it.body)
-      v(0.5em)
+      v(-0.5em)
     }
   }
 
@@ -390,7 +402,7 @@
       align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
         Gaëtan Serré \
         #text(size: 30pt)[
-          École Normale Supérieure de Paris-Saclay, Centre Borelli, MLMDA Team
+          École Normale Supérieure Paris-Saclay, Centre Borelli, MLMDA Team
         ]
       ])
   } else {
