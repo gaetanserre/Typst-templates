@@ -117,6 +117,17 @@
 }
 
 #let for_loop(
+  variable: $i$,
+  start: $1$,
+  end: $n$,
+  comment: none,
+  content: [],
+) = {
+  code_block(identifier: [*for* #variable $=$ #start *to* #end *do*], comment: comment, content: content)
+  [*end for*]
+}
+
+#let foreach_loop(
   variable: "i",
   iterator: "x",
   comment: none,
@@ -184,6 +195,7 @@
         set par(first-line-indent: 0em)
         box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
         [*Algorithm:* #smallcaps(name) \ ]
+        v(-1.2em)
         box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
         if input != none {
           [*Input:*]
@@ -332,9 +344,8 @@
     if fig == math.equation {
       [Eq.]
     }
-    
-    else if fig == figure {
-      gray(it.supplement)
+    else {
+      it.supplement
     }
   })
 
@@ -346,10 +357,29 @@
 
   // Show rules
 
-  show ref: set text(fill: rgb("#ff0000"))
   show footnote: set text(fill: rgb("#ff0000"))
   show link: set text(fill: rgb("#7209b7"))
   show cite: set text(fill: rgb("#4361ee"))
+
+  show ref: it => {
+    if it.element == none {
+      it
+    } else {
+      show link: set text(fill: rgb("#ff0000"))
+      let count = counter(it.element.func()).at(it.element.location()).at(0)
+      if it.element.func() == math.equation {
+        [Eq. ] + link(it.target, [#count])
+      } else {
+        let count = counter(figure.where(kind: it.element.kind)).at(it.element.location()).at(0)
+        let supp = it.element.supplement
+        if supp == [Figure] {
+          [Fig. ] + link(it.target, [#count])
+        } else {
+          [#it.element.supplement ] + link(it.target, [#count])
+        }
+      }
+    }
+  }
 
   show math.equation: set text(font: "New Computer Modern Math")
   
