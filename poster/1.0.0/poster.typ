@@ -277,13 +277,13 @@
 #let color_left = rgb("#665bad")
 #let color_right = rgb("#d3c8e9")
 #let grad_color = gradient.linear(color_left, color_right)
-#let accent(it) = context {
+#let accent(it, bold:true) = context {
   let color = if here().position().at("x").cm() < 84.1 / 2 {
     color_left
   } else {
     color_right
   }
-  set text(fill: color, weight: "bold")
+  set text(fill: color, weight: if bold {"bold"} else {"regular"})
   it
 }
 
