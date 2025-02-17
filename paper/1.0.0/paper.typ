@@ -273,7 +273,7 @@
         if authors == none {
           align(left, "Gaëtan Serré")
         } else if authors.len() > 1 {
-          align(left, authors.at(0).name  + " et al.")
+          align(left, authors.at(0).name + " et al.")
         } else {
           align(left, authors.at(0).name)
         }
