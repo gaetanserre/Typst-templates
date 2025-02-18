@@ -15,5 +15,5 @@ where `{data-dir}` is
 
 Then, in your document, add
 ```
-#import "@local/{beamer, paper}:1.0.0": *
+#import "@local/{beamer, paper, poster}:1.0.0": *
 ```
