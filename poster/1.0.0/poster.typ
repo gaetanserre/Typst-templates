@@ -314,7 +314,7 @@
   doc,
 ) = {
 
-  let sans_serif_font = "Noto Sans"
+  let sans_serif_font = "Noto Sans Display"
   
   // Set rules
   set page(
