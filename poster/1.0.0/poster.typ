@@ -161,7 +161,7 @@
 }
 
 #let comment(content) = {
-  [#box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", content)]
+  [#box(width: 1fr, repeat(" ")) #text(fill: rgb("#b2b2b2"), style: "italic", content)]
 }
 
 #let keyword(
