@@ -375,7 +375,7 @@
         if supp == [Figure] {
           [Fig. ] + link(it.target, [#count])
         } else {
-          [#it.element.supplement ] + link(it.target, [#count])
+          supp + link(it.target, [#count])
         }
       }
     }
