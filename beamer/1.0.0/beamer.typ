@@ -31,17 +31,17 @@
 )
 
 #let past_bib(loc) = {
-  let previous_heading_bodies = query(selector(heading).before(loc), loc).map(h => {h.body})
+  let previous_heading_bodies = query(selector(heading).before(loc)).map(h => {h.body})
   return previous_heading_bodies.contains(bib_wording.at(s_lang.at(loc)))
 }
 
 #let get_last_page_before_bib(loc) = {
   if past_bib(loc) {
-    return counter("page").final(loc).at(0)
+    return counter("page").final().at(0)
   }
 
-  let headings = query(selector(heading).after(loc), loc)
-  let bib_page_nb = counter("page").final(loc).at(0)
+  let headings = query(selector(heading).after(loc))
+  let bib_page_nb = counter("page").final().at(0)
   for heading in headings {
     if heading.body == bib_wording.at(s_lang.at(loc)) {
       bib_page_nb = counter("page").at(heading.location()).at(0)
@@ -548,12 +548,12 @@
 #let footer(loc, running_author) = {
   let page_nb = counter("page").at(loc).at(0)
 
-  let h = query(selector(heading).after(loc), loc).map(h => {h.body}).at(0, default: [])
+  let h = query(selector(heading).after(loc)).map(h => {h.body}).at(0, default: [])
 
   if page_nb == 0 or h == outline_wording.at(s_lang.at(loc)) {
     return []
   }
-  let last_page = get_last_page_before_bib(loc)
+  let last_page = counter("page").final().at(0) //get_last_page_before_bib(loc)
   let max_size_bar = 50pt
   let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
 
@@ -599,7 +599,7 @@
     footer: footer,
     background: context {
       let page_nb = counter("page").at(here()).at(0)
-      let h = query(selector(heading).before(here()), here()).map(h => {h.body}).at(0, default: [])
+      let h = query(selector(heading).before(here())).map(h => {h.body}).at(0, default: [])
       if page_nb == 0 and h != outline_wording.at(s_lang.at(here())) {
         title_background
       } else {
