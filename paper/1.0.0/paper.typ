@@ -247,6 +247,10 @@
   )
 }
 
+#let eq(it) = {
+  math.equation(block: true, numbering: "(1)", it)
+}
+
 #let config(
   title: none,
   subtitle: none,
@@ -339,7 +343,8 @@
     }
   })
 
-  set outline(indent: true, fill: repeat([.$space$]))
+  set outline(indent: auto)
+  set outline.entry(fill: repeat([.$space$]))
   set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
 
   // Show rules
