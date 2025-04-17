@@ -251,6 +251,16 @@
   math.equation(block: true, numbering: "(1)", it)
 }
 
+#let heading_numbering = state("heading_numbering", "1.1")
+
+#let appendix() = {
+  set heading(numbering: none)
+  [= Appendix]
+  v(-1em)
+  counter(heading).update(0)
+  heading_numbering.update("A.1")
+}
+
 #let config(
   title: none,
   subtitle: none,
@@ -319,8 +329,8 @@
 
   set text(font: "New Computer Modern")
 
-  set heading(numbering: (..nums) => {
-      nums.pos().map(str).join(".")
+  set heading(numbering: (..nums) => context {
+      numbering(heading_numbering.get(), ..(nums.pos()))
   })
 
   set math.equation(numbering: "(1)")
@@ -370,15 +380,11 @@
   }
 
   show heading: it => {
-    if it.body == [Bibliography] or it.body == [Contents] {
-      [#it.body \ \ ]
+    it
+    if it.level == 1 {
+      v(1.5em)
     } else {
-      let heading_nb = counter(heading).display()
-      if it.level == 1 {
-        [\ \ #heading_nb $space$ #it.body\ \ ]
-      } else {
-        [\ #heading_nb $space$ #it.body\ ]
-      }
+      v(0.5em)
     }
   }
 
