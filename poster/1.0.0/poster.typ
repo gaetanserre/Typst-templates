@@ -67,7 +67,7 @@
 
 #let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#b1255d"), eq_numbering)
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#5f072a"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#a4252a"), eq_numbering)
 
 #let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
 
