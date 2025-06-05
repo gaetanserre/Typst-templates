@@ -18,24 +18,25 @@
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = {
+#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = context {
   let counter = counter(supplement)
   counter.step()
   let body = {
     set math.equation(numbering: eq_numbering)
+    let count = counter.get().at(0) + 1
     if name == none {
-        [*#supplement #counter.display().* ] + it
+      [*#supplement #count.* ] + it
     } else {
-      [*#supplement #counter.display() * (#emph(name)). ] + it
+      [*#supplement #count * (#emph(name)). ] + it
     }
   }
   let fig = figure(
     rect(
-      width:100%,
-      stroke: ("left": 1pt+stroke_color, "rest": none),
+      width: 100%,
+      stroke: ("left": 1pt + stroke_color, "rest": none),
       fill: rgb("#eeeeee"),
       inset: (bottom: 10pt, rest: 5pt),
-      align(left, body)
+      align(left, body),
     ),
     caption: none,
     kind: supplement,
@@ -51,24 +52,66 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#b287a3"), eq_numbering)
+#let lemma(name, it, label: none, eq_numbering: none) = math_block(
+  "Lemma",
+  name,
+  it,
+  label,
+  rgb("#b287a3"),
+  eq_numbering,
+)
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#b1255d"), eq_numbering)
+#let proposition(name, it, label: none, eq_numbering: none) = math_block(
+  "Proposition",
+  name,
+  it,
+  label,
+  rgb("#b1255d"),
+  eq_numbering,
+)
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#5f072a"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = math_block(
+  "Theorem",
+  name,
+  it,
+  label,
+  rgb("#5f072a"),
+  eq_numbering,
+)
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
+#let corollary(name, it, label: none, eq_numbering: none) = math_block(
+  "Corollary",
+  name,
+  it,
+  label,
+  rgb("#ffc300"),
+  eq_numbering,
+)
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#bfb1c1"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = math_block(
+  "Definition",
+  name,
+  it,
+  label,
+  rgb("#bfb1c1"),
+  eq_numbering,
+)
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380b6"), eq_numbering)
+#let remark(name, it, label: none, eq_numbering: none) = math_block(
+  "Remark",
+  name,
+  it,
+  label,
+  rgb("#8380b6"),
+  eq_numbering,
+)
 
 #let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
 
 #let proof(it) = {
   block(
     width: 90%,
-    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
+    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
   )
 }
 
@@ -81,24 +124,29 @@
   comment: none,
   content: [],
   has_stroke: true,
-  inset: 1em
+  inset: 1em,
 ) = {
   if comment == none {
     identifier
   } else {
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
-  block(width: auto, above: 0.5em, below:0.5em, {
-    let stroke = ("left": 1pt, "rest": none)
-    if not has_stroke {
-      stroke = none
-    }
-    rect(
-      stroke: stroke,
-      outset: -0.1em,
-      inset: (right: 0em, rest: inset),
+  block(
+    width: auto,
+    above: 0.5em,
+    below: 0.5em,
+    {
+      let stroke = ("left": 1pt, "rest": none)
+      if not has_stroke {
+        stroke = none
+      }
+      rect(
+        stroke: stroke,
+        outset: -0.1em,
+        inset: (right: 0em, rest: inset),
       )[#content]
-  })
+    },
+  )
 }
 
 #let for_loop(
@@ -117,7 +165,7 @@
   comment: none,
   content: [],
 ) = {
-    code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
+  code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
   [*end while*]
 }
 
@@ -143,51 +191,58 @@
   keyword,
   fill: black,
   weight: "regular",
-  style: none
-  ) = {
-    if style == none {
-      text(fill: fill, weight: weight, keyword)
-    } else {
-      style(keyword)
-    }
+  style: none,
+) = {
+  if style == none {
+    text(fill: fill, weight: weight, keyword)
+  } else {
+    style(keyword)
+  }
 }
 
 #let Return = keyword([return], weight: "bold")
-#let Break  = keyword([break], weight: "bold")
+#let Break = keyword([break], weight: "bold")
 #let Continue = keyword([continue], weight: "bold")
 
 #let algorithm(
   name: none,
   input: none,
   output: none,
-  content: []
+  content: [],
 ) = {
-  align(center, 
-    block(width: auto, {
-      align(left, {
-        counter("algorithm").step()
-        //show line: set block(above: 0.4em, below: 0.4em)
-        set par(first-line-indent: 0em)
-        box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
-        [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
-        if input != none {
-          [*Input:*]
-          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
-        }
-        if output != none {
-          [*Output:*]
-          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
-        }
+  align(
+    center,
+    block(
+      width: auto,
+      {
+        align(
+          left,
+          {
+            counter("algorithm").step()
+            //show line: set block(above: 0.4em, below: 0.4em)
+            set par(first-line-indent: 0em)
+            box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
+            [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
+            box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+            if input != none {
+              [*Input:*]
+              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+            }
+            if output != none {
+              [*Output:*]
+              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+            }
 
-        if output != none or input != none {
-          box(width: 1fr, line(length: 100%, stroke: {1pt + black})) +  [ \ ]
-        }
-        
-        [#content \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black}))
-      })
-    })
+            if output != none or input != none {
+              box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+            }
+
+            [#content \ ]
+            box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
+          },
+        )
+      },
+    ),
   )
 }
 
@@ -221,7 +276,7 @@
     show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#d4244a"))
     code
   }
-  
+
   let n_comment = 0
   let n_char = 0
   let final_content = []
@@ -237,13 +292,13 @@
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
   } */
-  
+
   block(
-    width:100%,
-    stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
+    width: 100%,
+    stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
     fill: rgb("#eeeeee"),
     inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, raw(lang: "lean4", it))
+    align(left, raw(lang: "lean4", it)),
   )
 }
 
@@ -273,7 +328,6 @@
   logo: none,
   doc,
 ) = {
-
   // Odd-switching header function
   let header_loc = none
   if header != none {
@@ -309,7 +363,7 @@
       }
     }
   }
-  
+
   // Set rules
   set page(
     paper: "a4",
@@ -322,16 +376,18 @@
       } else {
         none
       }
-    }
+    },
   )
 
   set par(justify: true, first-line-indent: 1em)
 
   set text(font: "New Computer Modern")
 
-  set heading(numbering: (..nums) => context {
+  set heading(
+    numbering: (..nums) => context {
       numbering(heading_numbering.get(), ..(nums.pos()))
-  })
+    },
+  )
 
   set math.equation(numbering: "(1)")
 
@@ -342,16 +398,16 @@
   set enum(indent: 1em)
 
   // Reference style
-  set ref(supplement: it => {
-    let fig = it.func()
-    if fig == math.equation {
-      text(fill: black, "Eq.")
-    }
-    
-    else if fig == figure {
-      text(fill: black, it.supplement)
-    }
-  })
+  set ref(
+    supplement: it => {
+      let fig = it.func()
+      if fig == math.equation {
+        text(fill: black, "Eq.")
+      } else if fig == figure {
+        text(fill: black, it.supplement)
+      }
+    },
+  )
 
   set outline(indent: auto)
   set outline.entry(fill: repeat([.$space$]))
@@ -365,7 +421,7 @@
   show cite: set text(fill: rgb("#4361ee"))
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
-  
+
 
   // Algorithm & Lean figure
   show figure: fig => {
@@ -389,38 +445,50 @@
   }
 
   // Title & subtitle
-  align(center, {
-    text(16pt)[#title]
-    if subtitle != none {
-      text(14pt)[ \ #emph(subtitle)]
-     }
-  })
+  align(
+    center,
+    {
+      text(16pt)[#title]
+      if subtitle != none {
+        text(14pt)[ \ #emph(subtitle)]
+      }
+    },
+  )
 
   // Authors
   if authors == none {
-      align(center, text(14pt)[
+    align(
+      center,
+      text(14pt)[
         Gaëtan Serré \
         Centre Borelli - ENS Paris-Saclay \
         #text(font: "CMU Typewriter Text")[
           #link("mailto:gaetan.serre@ens-paris-saclay.fr")
         ]
-      ])
+      ],
+    )
   } else {
     for author in authors {
-      align(center, text(14pt)[
-        #author.name \
-        #author.affiliation \
-        #text(font: "CMU Typewriter Text")[
-          #link("mailto:" + author.email)
-        ]
-      ])
+      align(
+        center,
+        text(14pt)[
+          #author.name \
+          #author.affiliation \
+          #text(font: "CMU Typewriter Text")[
+            #link("mailto:" + author.email)
+          ]
+        ],
+      )
     }
   }
 
   if supervision != none {
-    align(center,[
-      #supervision
-    ])
+    align(
+      center,
+      [
+        #supervision
+      ],
+    )
   }
 
   // Abstract
@@ -428,29 +496,41 @@
 
   if abstract != none {
     align(center, text()[*Abstract*])
-    align(center, 
-      box(width:width_box_abstract, 
-        align(left, text(size: 10pt)[
-          #abstract
-        ])
-      )
+    align(
+      center,
+      box(
+        width: width_box_abstract,
+        align(
+          left,
+          text(size: 10pt)[
+            #abstract
+          ],
+        ),
+      ),
     )
   }
-  
+
   // Keywords
-  align(center, box(width:width_box_abstract,
-    align(left, {
-      set text(size: 10pt)
-      if keywords.len() > 0 {
-        [*Keywords: *]
-        let last_keyword = keywords.pop()
-        for keyword in keywords {
-          [#keyword] + [; ]
-        }
-        [#last_keyword.]
-      }
-    })
-  ))
+  align(
+    center,
+    box(
+      width: width_box_abstract,
+      align(
+        left,
+        {
+          set text(size: 10pt)
+          if keywords.len() > 0 {
+            [*Keywords: *]
+            let last_keyword = keywords.pop()
+            for keyword in keywords {
+              [#keyword] + [; ]
+            }
+            [#last_keyword.]
+          }
+        },
+      ),
+    ),
+  )
 
   doc
 }
