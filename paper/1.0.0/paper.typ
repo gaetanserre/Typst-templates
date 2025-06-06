@@ -435,14 +435,13 @@
     }
   }
 
-  show heading: it => {
-    it
-    if it.level == 1 {
-      v(1.5em)
+  /* show heading: it => {
+    if it.body == [Bibliography] or it.body == [Contents] {
+      [#it.body \ \ ]
     } else {
       v(0.5em)
     }
-  }
+  } */
 
   // Title & subtitle
   align(
