@@ -13,30 +13,48 @@
   link(url)[#text] + footnote(link(url))
 }
 
+#let s_lang = state("lang", "en")
+#let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
+#let outline_wording = ("en": [Outline], "fr": [Table des matières])
+
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = context {
+#let math_block(supplement_dict, name, it, lb, stroke_color, eq_numbering) = context {
+  let supplement = supplement_dict.at(s_lang.final())
   let counter = counter(supplement)
   counter.step()
-  let body = {
-    set math.equation(numbering: eq_numbering)
-    let count = counter.get().at(0) + 1
-    if name == none {
-      [*#supplement #count.* ] + it
-    } else {
-      [*#supplement #count * (#emph(name)). ] + it
-    }
+
+  set math.equation(numbering: eq_numbering)
+
+  let count = counter.get().at(0) + 1
+
+  let name_box = if name == none {
+    text(fill: stroke_color, [*#supplement #count*])
+  } else {
+    text(fill: stroke_color, [*#supplement #count* -- #emph(name)])
   }
+
   let fig = figure(
-    rect(
-      width: 100%,
-      stroke: ("left": 1pt + stroke_color, "rest": none),
-      fill: rgb("#eeeeee"),
-      inset: (bottom: 10pt, rest: 5pt),
-      align(left, body),
+    align(
+      left,
+      box(
+        stroke: (left: 2pt + stroke_color),
+        inset: (left: 0.5em, bottom: 0.5em),
+        [
+          #box(fill: rgb("#fcfcfc"), inset: (left: 0em, rest: 0.5em), radius: (top-right: 0.3em), name_box),
+          #v(-1.4em)
+          #rect(
+            width: 100%,
+            fill: rgb("#fcfcfc"),
+            inset: (left: 0em, rest: 0.5em),
+            outset: (bottom: 0.5em),
+            align(left, it),
+          )
+        ],
+      ),
     ),
     caption: none,
     kind: supplement,
@@ -53,7 +71,7 @@
 // Math blocks
 
 #let lemma(name, it, label: none, eq_numbering: none) = math_block(
-  "Lemma",
+  ("en": "Lemma", "fr": "Lemme"),
   name,
   it,
   label,
@@ -62,7 +80,7 @@
 )
 
 #let proposition(name, it, label: none, eq_numbering: none) = math_block(
-  "Proposition",
+  ("en": "Proposition", "fr": "Proposition"),
   name,
   it,
   label,
@@ -71,7 +89,7 @@
 )
 
 #let theorem(name, it, label: none, eq_numbering: none) = math_block(
-  "Theorem",
+  ("en": "Theorem", "fr": "Théorème"),
   name,
   it,
   label,
@@ -80,7 +98,7 @@
 )
 
 #let corollary(name, it, label: none, eq_numbering: none) = math_block(
-  "Corollary",
+  ("en": "Corollary", "fr": "Corollaire"),
   name,
   it,
   label,
@@ -89,16 +107,17 @@
 )
 
 #let definition(name, it, label: none, eq_numbering: none) = math_block(
-  "Definition",
+  ("en": "Definition", "fr": "Définition"),
   name,
   it,
   label,
-  rgb("#bfb1c1"),
+  black,
+  //rgb("#78a3ef"),
   eq_numbering,
 )
 
 #let remark(name, it, label: none, eq_numbering: none) = math_block(
-  "Remark",
+  ("en": "Remark", "fr": "Remarque"),
   name,
   it,
   label,
@@ -106,7 +125,14 @@
   eq_numbering,
 )
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#9bc4cb"), eq_numbering)
+#let example(it, label: none, eq_numbering: none) = math_block(
+  ("en": "Example", "fr": "Exemple"),
+  none,
+  it,
+  label,
+  rgb("#9bc4cb"),
+  eq_numbering,
+)
 
 #let proof(it) = {
   block(
@@ -253,46 +279,6 @@
 // #let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 9pt, cont)
 
 #let lean_block(it) = {
-  /* set par(first-line-indent: 0em)
-  show par: set block(spacing: 0em)
-  set text(font: "FiraCode Nerd Font", size: 9pt)
-  let reg_comment = regex(`(\/-[^-/]*-\/)|(--.*)`.text)
-  let comment_matches = cont.matches(reg_comment)
-  let cont_without_comments = cont.split(reg_comment)
-
-  let print_comment(comment) = {
-    set par(first-line-indent: 0em)
-    show regex("[^\*]\*[^\*]+\*(\n | [^\*])"): set text(style: "italic", fill: black)
-    show regex("`.+`"): set text(fill: rgb("#ad7fa8"))
-    show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: black)
-    text(fill: rgb("#6a737d"), comment)
-  }
-
-  let print_code(code) = {
-    set par(first-line-indent: 0em)
-    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show|class|instance|where)(\s|$)"): set text(fill: rgb("#8b3fef"))
-    show regex("Type"): set text(fill: rgb("#8b3fef"))
-    show regex("(lemma|theorem|def|class)\s\w+"): set text(fill: rgb("#3475f5"))
-    show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#d4244a"))
-    code
-  }
-
-  let n_comment = 0
-  let n_char = 0
-  let final_content = []
-  for i in range(cont_without_comments.len()) {
-    while (comment_matches.len() > n_comment and (comment_matches.at(n_comment).start == n_char or comment_matches.at(n_comment).start == 1)) {
-      final_content += print_comment(comment_matches.at(n_comment).text)
-      n_char += comment_matches.at(n_comment).text.len()
-      n_comment += 1
-    }
-    final_content += print_code(cont_without_comments.at(i))
-    n_char += cont_without_comments.at(i).len()
-  }
-  if (comment_matches.len() > n_comment) {
-    final_content += print_comment(comment_matches.at(n_comment).text)
-  } */
-
   block(
     width: 100%,
     stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
@@ -302,7 +288,7 @@
   )
 }
 
-#let eq(it) = {
+#let equa(it) = {
   math.equation(block: true, numbering: "(1)", it)
 }
 
@@ -326,8 +312,9 @@
   keywords: (),
   first_page_nb: true,
   logo: none,
+  lang: "en",
   doc,
-) = {
+) = context {
   // Odd-switching header function
   let header_loc = none
   if header != none {
@@ -348,6 +335,8 @@
       }
     }
   }
+
+  let sans_serif_font = "Noto Sans"
 
   let page_nb = {
     if first_page_nb {
@@ -379,9 +368,11 @@
     },
   )
 
-  set par(justify: true, first-line-indent: 1em)
+  set par(justify: true, first-line-indent: 0em)
 
-  set text(font: "New Computer Modern")
+  s_lang.update(lang)
+
+  set text(font: "New Computer Modern", lang: s_lang.final())
 
   set heading(
     numbering: (..nums) => context {
@@ -435,21 +426,34 @@
     }
   }
 
-  /* show heading: it => {
-    if it.body == [Bibliography] or it.body == [Contents] {
-      [#it.body \ \ ]
+  show heading: it => context {
+    set text(font: sans_serif_font)
+    if it.level == 1 and it.body != bib_wording.at(s_lang.final()) {
+      grid(
+        columns: (5%, 95%),
+        column-gutter: 0.5em,
+        square(
+          width: 100%,
+          fill: black,
+          radius: 0.2em,
+          align(horizon + center, text(fill: white, counter(heading).display())),
+        ),
+        align(horizon, it.body),
+      )
+      v(0.3em)
     } else {
-      v(0.5em)
+      it
+      v(0.2em)
     }
-  } */
+  }
 
   // Title & subtitle
   align(
     center,
     {
-      text(16pt)[#title]
+      text(size: 16pt, font: sans_serif_font)[#title]
       if subtitle != none {
-        text(14pt)[ \ #emph(subtitle)]
+        text(size: 14pt)[ \ #emph(subtitle)]
       }
     },
   )
@@ -458,7 +462,7 @@
   if authors == none {
     align(
       center,
-      text(14pt)[
+      text(font: sans_serif_font, size: 14pt)[
         Gaëtan Serré \
         Centre Borelli - ENS Paris-Saclay \
         #text(font: "CMU Typewriter Text")[
@@ -470,7 +474,7 @@
     for author in authors {
       align(
         center,
-        text(14pt)[
+        text(font: sans_serif_font, size: 14pt)[
           #author.name \
           #author.affiliation \
           #text(font: "CMU Typewriter Text")[
