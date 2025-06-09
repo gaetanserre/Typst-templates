@@ -25,30 +25,31 @@
   set math.equation(numbering: eq_numbering)
 
   let name_box = if name == none {
-      text(fill: stroke_color, [*#supplement*])
-    } else {
-      text(fill: stroke_color, [*#supplement* -- #emph(name)])
-    }
+    text(fill: stroke_color, [*#supplement*])
+  } else {
+    text(fill: stroke_color, [*#supplement* -- #emph(name)])
+  }
 
   let fig = figure(
-    [
-    #align(left,box(
-      fill: rgb("#f8f6fb"),
-      inset: (bottom: 0.2em, rest: 0.5em),
-      stroke: (left: 5pt + stroke_color),
-      radius: (top-right: 0.3em),
-      name_box
-    ))
-    #v(-1.35em)
-    #set text(font: "New Computer Modern", size: 37pt)
-    #rect(
-      width:100%,
-      stroke: (left: 5pt + stroke_color),
-      fill: rgb("#f8f6fb"),
-      inset: (bottom: 1em, rest: 1em),
-      align(left, it)
-    )
-    ],
+    align(
+      left,
+      box(
+        stroke: (left: 5pt + stroke_color),
+        inset: (left: 0.5em, bottom: 0.5em),
+        [
+          #box(fill: rgb("#fcfcfc"), inset: (left: 0em, rest: 0.5em), radius: (top-right: 0.3em), name_box),
+          #v(-1.4em)
+          #set text(font: "New Computer Modern", size: 37pt)
+          #rect(
+            width: 100%,
+            fill: rgb("#fcfcfc"),
+            inset: (left: 0em, rest: 0.5em),
+            outset: (bottom: 0.5em),
+            align(left, it),
+          )
+        ],
+      ),
+    ),
     caption: none,
     kind: supplement,
     supplement: supplement,
@@ -63,17 +64,59 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block("Lemma", name, it, label, rgb("#b287a3"), eq_numbering)
+#let lemma(name, it, label: none, eq_numbering: none) = math_block(
+  "Lemma",
+  name,
+  it,
+  label,
+  rgb("#b287a3"),
+  eq_numbering,
+)
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block("Proposition", name, it, label, rgb("#b1255d"), eq_numbering)
+#let proposition(name, it, label: none, eq_numbering: none) = math_block(
+  "Proposition",
+  name,
+  it,
+  label,
+  rgb("#b1255d"),
+  eq_numbering,
+)
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block("Theorem", name, it, label, rgb("#a4252a"), eq_numbering)
+#let theorem(name, it, label: none, eq_numbering: none) = math_block(
+  "Theorem",
+  name,
+  it,
+  label,
+  rgb("#a4252a"),
+  eq_numbering,
+)
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block("Corollary", name, it, label, rgb("#ffc300"), eq_numbering)
+#let corollary(name, it, label: none, eq_numbering: none) = math_block(
+  "Corollary",
+  name,
+  it,
+  label,
+  rgb("#ffc300"),
+  eq_numbering,
+)
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block("Definition", name, it, label, rgb("#78a3ef"), eq_numbering)
+#let definition(name, it, label: none, eq_numbering: none) = math_block(
+  "Definition",
+  name,
+  it,
+  label,
+  rgb("#78a3ef"),
+  eq_numbering,
+)
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block("Remark", name, it, label, rgb("#8380b6"), eq_numbering)
+#let remark(name, it, label: none, eq_numbering: none) = math_block(
+  "Remark",
+  name,
+  it,
+  label,
+  rgb("#8380b6"),
+  eq_numbering,
+)
 
 #let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#bfb1c1"), eq_numbering)
 
@@ -83,7 +126,7 @@
   set math.equation(numbering: none)
   block(
     width: 90%,
-    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
+    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
   )
 }
 
@@ -96,24 +139,29 @@
   comment: none,
   content: [],
   has_stroke: true,
-  inset: 0.5em
+  inset: 0.5em,
 ) = {
   if comment == none {
     identifier
   } else {
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
-  block(width: auto, above: 0.5em, below:0.5em, {
-    let stroke = (left: black + 1pt, rest: none)
-    if not has_stroke {
-      stroke = none
-    }
-    rect(
-      stroke: stroke,
-      outset: -0.1em,
-      inset: (right: 0em, left: 1em, rest: inset),
+  block(
+    width: auto,
+    above: 0.5em,
+    below: 0.5em,
+    {
+      let stroke = (left: black + 1pt, rest: none)
+      if not has_stroke {
+        stroke = none
+      }
+      rect(
+        stroke: stroke,
+        outset: -0.1em,
+        inset: (right: 0em, left: 1em, rest: inset),
       )[#content]
-  })
+    },
+  )
 }
 
 #let for_loop(
@@ -168,52 +216,59 @@
   keyword,
   fill: black,
   weight: "regular",
-  style: none
-  ) = {
-    if style == none {
-      text(fill: fill, weight: weight, keyword)
-    } else {
-      style(keyword)
-    }
+  style: none,
+) = {
+  if style == none {
+    text(fill: fill, weight: weight, keyword)
+  } else {
+    style(keyword)
+  }
 }
 
 #let Return = keyword([return], weight: "bold")
-#let Break  = keyword([break], weight: "bold")
+#let Break = keyword([break], weight: "bold")
 #let Continue = keyword([continue], weight: "bold")
 
 #let algorithm(
   name: none,
   input: none,
   output: none,
-  content: []
+  content: [],
 ) = {
-  align(center, 
-    block(width: auto, {
-      align(left, {
-        counter("algorithm").step()
-        //show line: set block(above: 0.4em, below: 0.4em)
-        set par(first-line-indent: 0em)
-        box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
-        [*Algorithm:* #smallcaps(name) \ ]
-        v(-1.2em)
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
-        if input != none {
-          [*Input:*]
-          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
-        }
-        if output != none {
-          [*Output:*]
-          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
-        }
+  align(
+    center,
+    block(
+      width: auto,
+      {
+        align(
+          left,
+          {
+            counter("algorithm").step()
+            //show line: set block(above: 0.4em, below: 0.4em)
+            set par(first-line-indent: 0em)
+            box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
+            [*Algorithm:* #smallcaps(name) \ ]
+            v(-1.2em)
+            box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+            if input != none {
+              [*Input:*]
+              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+            }
+            if output != none {
+              [*Output:*]
+              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+            }
 
-        if output != none or input != none {
-          box(width: 1fr, line(length: 100%, stroke: {1pt + black})) +  [ \ ]
-        }
-        
-        [#content \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black}))
-      })
-    })
+            if output != none or input != none {
+              box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+            }
+
+            [#content \ ]
+            box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
+          },
+        )
+      },
+    ),
   )
 }
 
@@ -247,7 +302,7 @@
     show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#d4244a"))
     code
   }
-  
+
   let n_comment = 0
   let n_char = 0
   let final_content = []
@@ -263,13 +318,13 @@
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
   } */
-  
+
   block(
-    width:100%,
-    stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
+    width: 100%,
+    stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
     fill: rgb("#f8f6fb"),
     inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, raw(lang: "lean4", it))
+    align(left, raw(lang: "lean4", it)),
   )
 }
 
@@ -277,14 +332,14 @@
 #let color_left = rgb("#665bad")
 #let color_right = rgb("#d3c8e9")
 #let grad_color = gradient.linear(color_left, color_right)
-#let accent(it, bold:true) = context {
+#let accent(it, bold: true) = context {
   /* let color = if here().position().at("x").cm() < 84.1 / 2 {
     color_left
   } else {
     color_right
   } */
- let color = color_left
-  set text(fill: color, weight: if bold {"bold"} else {"regular"})
+  let color = color_left
+  set text(fill: color, weight: if bold { "bold" } else { "regular" })
   it
 }
 
@@ -292,13 +347,13 @@
   align(left)[
     #rect(
       width: 85cm,
-      inset: (top: 2em, left:1em, rest: 0em),
+      inset: (top: 2em, left: 1em, rest: 0em),
       stroke: (top: 10pt + grad_color, rest: none),
-      outset: 0em
-      )[
-        #bibliography(references)
-        #v(0.8em)
-      ]
+      outset: 0em,
+    )[
+      #bibliography(references)
+      #v(0.8em)
+    ]
   ]
 }
 
@@ -314,9 +369,8 @@
   background: none,
   doc,
 ) = {
-
   let sans_serif_font = "Noto Sans"
-  
+
   // Set rules
   set page(
     paper: "a0",
@@ -340,15 +394,16 @@
   set enum(indent: 1em)
 
   // Reference style
-  set ref(supplement: it => {
-    let fig = it.func()
-    if fig == math.equation {
-      [Eq.]
-    }
-    else {
-      it.supplement
-    }
-  })
+  set ref(
+    supplement: it => {
+      let fig = it.func()
+      if fig == math.equation {
+        [Eq.]
+      } else {
+        it.supplement
+      }
+    },
+  )
 
   set outline(indent: auto)
   set outline.entry(fill: repeat([.$space$]))
@@ -384,7 +439,7 @@
   }
 
   show math.equation: set text(font: "New Computer Modern Math")
-  
+
   // Algorithm & Lean figure
   show figure: fig => {
     if fig.kind == "algorithm" {
@@ -402,8 +457,7 @@
       []
     } else {
       let size = {
-        if it.level >= 2 {30pt}
-        else {50pt}
+        if it.level >= 2 { 30pt } else { 50pt }
       }
       set text(size: size, font: sans_serif_font)
       v(0.5em)
@@ -412,7 +466,7 @@
     }
   }
 
-  show bibliography : it => {
+  show bibliography: it => {
     set text(size: 25pt)
     it
   }
@@ -421,36 +475,48 @@
 
 
   // Title & subtitle
-  align(left, {
-    text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font, title)
-    if subtitle != none {
-      text(30pt)[ \ #emph(subtitle)]
-     }
-  })
+  align(
+    left,
+    {
+      text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font, title)
+      if subtitle != none {
+        text(30pt)[ \ #emph(subtitle)]
+      }
+    },
+  )
 
   // Authors
   if authors == none {
-      v(-1em)
-      align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
+    v(-1em)
+    align(
+      left,
+      text(size: 50pt, fill: white, font: sans_serif_font)[
         Gaëtan Serré \
         #text(size: 30pt)[
           École Normale Supérieure Paris-Saclay, Centre Borelli, MLMDA Team
         ]
-      ])
+      ],
+    )
   } else {
     for author in authors {
       v(-1em)
-      align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
-        #author.name \
-        #text(size: 30pt,[
-          #author.affiliation \
-          #v(-1em)
-          #text(font: "CMU Typewriter Text")[
-            #link("mailto:" + author.email)
-          ]
-        ])
-        
-      ])
+      align(
+        left,
+        text(size: 50pt, fill: white, font: sans_serif_font)[
+          #author.name \
+          #text(
+            size: 30pt,
+            [
+              #author.affiliation \
+              #v(-1em)
+              #text(font: "CMU Typewriter Text")[
+                #link("mailto:" + author.email)
+              ]
+            ],
+          )
+
+        ],
+      )
     }
   }
 
