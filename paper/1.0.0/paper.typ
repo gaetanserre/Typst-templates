@@ -16,13 +16,16 @@
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
+#let proof_wording = ("en": [Proof], "fr": [Preuve])
+
+#let sans_serif_font = "Noto Sans"
 
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement_dict, name, it, lb, stroke_color, eq_numbering) = context {
+#let math_block(supplement_dict, name, it, lb, eq_numbering) = context {
   let supplement = supplement_dict.at(s_lang.final())
   let counter = counter(supplement)
   counter.step()
@@ -32,25 +35,36 @@
   let count = counter.get().at(0) + 1
 
   let name_box = if name == none {
-    text(fill: stroke_color, [*#supplement #count*])
+    text(font: sans_serif_font, size: 10pt, [*#supplement #count*])
   } else {
-    text(fill: stroke_color, [*#supplement #count* -- #emph(name)])
+    [
+      #text(font: sans_serif_font, size: 10pt, [*#supplement #count* --])
+      #emph(name)
+    ]
   }
+
+  let fill_color = rgb("#f7f7f7")
 
   let fig = figure(
     align(
       left,
       box(
-        stroke: (left: 2pt + stroke_color),
+        stroke: (left: 2pt + black),
         inset: (left: 0.5em, bottom: 0.5em),
         [
-          #box(fill: rgb("#fcfcfc"), inset: (left: 0em, rest: 0.5em), radius: (top-right: 0.3em), name_box),
+          #box(
+            fill: fill_color,
+            inset: (left: 0em, rest: 0.5em),
+            outset: (left: 0.5em - 1pt),
+            radius: (top-right: 0.3em),
+            name_box,
+          )
           #v(-1.4em)
           #rect(
             width: 100%,
-            fill: rgb("#fcfcfc"),
+            fill: fill_color,
             inset: (left: 0em, rest: 0.5em),
-            outset: (bottom: 0.5em),
+            outset: (bottom: 0.5em, left: 0.5em - 1pt),
             align(left, it),
           )
         ],
@@ -75,7 +89,6 @@
   name,
   it,
   label,
-  rgb("#b287a3"),
   eq_numbering,
 )
 
@@ -84,7 +97,6 @@
   name,
   it,
   label,
-  rgb("#b1255d"),
   eq_numbering,
 )
 
@@ -93,7 +105,6 @@
   name,
   it,
   label,
-  rgb("#5f072a"),
   eq_numbering,
 )
 
@@ -102,7 +113,6 @@
   name,
   it,
   label,
-  rgb("#ffc300"),
   eq_numbering,
 )
 
@@ -111,8 +121,6 @@
   name,
   it,
   label,
-  black,
-  //rgb("#78a3ef"),
   eq_numbering,
 )
 
@@ -121,7 +129,6 @@
   name,
   it,
   label,
-  rgb("#8380b6"),
   eq_numbering,
 )
 
@@ -130,14 +137,13 @@
   none,
   it,
   label,
-  rgb("#9bc4cb"),
   eq_numbering,
 )
 
-#let proof(it) = {
+#let proof(it) = context {
   block(
     width: 90%,
-    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
+    align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])),
   )
 }
 
@@ -315,6 +321,8 @@
   lang: "en",
   doc,
 ) = context {
+  s_lang.update(lang)
+
   // Odd-switching header function
   let header_loc = none
   if header != none {
@@ -335,8 +343,6 @@
       }
     }
   }
-
-  let sans_serif_font = "Noto Sans"
 
   let page_nb = {
     if first_page_nb {
@@ -370,7 +376,6 @@
 
   set par(justify: true, first-line-indent: 0em)
 
-  s_lang.update(lang)
 
   set text(font: "New Computer Modern", lang: s_lang.final())
 
@@ -403,6 +408,8 @@
   set outline(indent: auto)
   set outline.entry(fill: repeat([.$space$]))
   set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
+
+  set enum(numbering: "i.")
 
   // Show rules
 
@@ -451,7 +458,7 @@
   align(
     center,
     {
-      text(size: 16pt, font: sans_serif_font)[#title]
+      text(size: 18pt, font: sans_serif_font)[*#title*]
       if subtitle != none {
         text(size: 14pt)[ \ #emph(subtitle)]
       }
@@ -462,7 +469,7 @@
   if authors == none {
     align(
       center,
-      text(font: sans_serif_font, size: 14pt)[
+      text(font: sans_serif_font, size: 12pt)[
         Gaëtan Serré \
         Centre Borelli - ENS Paris-Saclay \
         #text(font: "CMU Typewriter Text")[
