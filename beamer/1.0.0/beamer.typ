@@ -26,12 +26,12 @@
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
 #let thanks_wording = (
-  "en": [Thank you for your #text(fill: rgb("#937bf1"),[attention])!],
-  "fr": [Merci pour votre #text(fill: rgb("#937bf1"),[attention]) !]
+  "en": [Thank you for your #text(fill: rgb("#937bf1"), [attention])!],
+  "fr": [Merci pour votre #text(fill: rgb("#937bf1"), [attention]) !],
 )
 
 #let past_bib(loc) = {
-  let previous_heading_bodies = query(selector(heading).before(loc)).map(h => {h.body})
+  let previous_heading_bodies = query(selector(heading).before(loc)).map(h => { h.body })
   return previous_heading_bodies.contains(bib_wording.at(s_lang.at(loc)))
 }
 
@@ -95,35 +95,38 @@
   v_block_align: horizon,
   breakpage: true,
 ) = context {
-    set par(leading: 20pt)
-    if title != none {
-      if has_previous_title(title) {
-        title_style(title)
-      } else {
-        [= #title]
-      }
+  set par(leading: 20pt)
+  if title != none {
+    if has_previous_title(title) {
+      title_style(title)
+    } else {
+      [= #title]
     }
+  }
 
-    if subtitle != none {
-      if has_previous_subtitle(title, subtitle) {
-        subtitle_style(subtitle)
-      } else {
-        [== #subtitle]
-        counter("page").step()
-      }
-    } else if not has_previous_title(title) {
+  if subtitle != none {
+    if has_previous_subtitle(title, subtitle) {
+      subtitle_style(subtitle)
+    } else {
+      [== #subtitle]
       counter("page").step()
     }
+  } else if not has_previous_title(title) {
+    counter("page").step()
+  }
 
-    set par(leading: 0.65em)
+  set par(leading: 0.65em)
 
-    align(h_block_align + v_block_align, box([
+  align(
+    h_block_align + v_block_align,
+    box([
       #content
-    ]))
+    ]),
+  )
 
-    if breakpage {
-      pagebreak()
-    }
+  if breakpage {
+    pagebreak()
+  }
 }
 
 #let columns_slide(
@@ -138,7 +141,6 @@
   stroke: none,
   breakpage: true,
 ) = {
-
   if columns == none {
     columns = ()
     for content in contents {
@@ -146,13 +148,16 @@
     }
   }
 
-  let content = grid(
-    columns: columns,
-    column-gutter: column_gutter,
-    stroke: stroke,
-    rows: (auto),
-    ..contents
-  ) + common_content
+  let content = (
+    grid(
+      columns: columns,
+      column-gutter: column_gutter,
+      stroke: stroke,
+      rows: auto,
+      ..contents
+    )
+      + common_content
+  )
 
   slide(
     title: title,
@@ -171,28 +176,28 @@
   (numbers, last_bullet: none) => {
     let counter = 0
     for i in numbers {
-    if numbered {
-      if counter == (numbers.len() - 1) and last_bullet != none [
-        + #last_bullet(items.at(i))
-      ] else [
-        + #items.at(i)
-      ]
-     } else {
-      if counter == (numbers.len() - 1) and last_bullet != none [
-        - #last_bullet(items.at(i))
-      ] else [
-        - #items.at(i)
-      ]
-     }
-     counter += 1
+      if numbered {
+        if counter == (numbers.len() - 1) and last_bullet != none [
+          + #last_bullet(items.at(i))
+        ] else [
+          + #items.at(i)
+        ]
+      } else {
+        if counter == (numbers.len() - 1) and last_bullet != none [
+          - #last_bullet(items.at(i))
+        ] else [
+          - #items.at(i)
+        ]
+      }
+      counter += 1
     }
   }
 }
 
-#let unfold_bullet(items, title: none, numbered:false, last_bullet: none) = {
+#let unfold_bullet(items, title: none, numbered: false, last_bullet: none) = {
   let bullet = init_bullet_list(
     items: items,
-    numbered: numbered
+    numbered: numbered,
   )
 
   let idx = ()
@@ -200,10 +205,13 @@
     idx += (i,)
     slide(
       title: title,
-      content: align(left, bullet(
-        idx,
-        last_bullet: last_bullet
-      )),
+      content: align(
+        left,
+        bullet(
+          idx,
+          last_bullet: last_bullet,
+        ),
+      ),
     )
   }
 }
@@ -214,19 +222,20 @@
   authors: [Authors],
   emails: [Emails],
   date: none,
-  background: none) = {
-    slide(
-      title: none,
-      content: [
-        #text(size: 30pt, [#title])\
-        #text(15pt, style: "italic", subtitle)\
-        #authors\
-        #emails\
-        #date
-      ],
-      breakpage: false
-    )
-    counter("page").update(0)
+  background: none,
+) = {
+  slide(
+    title: none,
+    content: [
+      #text(size: 30pt, [#title])\
+      #text(15pt, style: "italic", subtitle)\
+      #authors\
+      #emails\
+      #date
+    ],
+    breakpage: false,
+  )
+  counter("page").update(0)
 }
 
 #let get_n_space(n) = {
@@ -249,27 +258,35 @@
   [= #outline_wording.at(s_lang.at(here()))]
   let headings = query(selector(heading).after(here()), here()).slice(1, none)
   let unique_headings = ()
-  align(v_align,
-  for heading in headings {
-    if not check_heading_in_unique(heading, unique_headings) {
-      let heading_loc = heading.location()
-      unique_headings += (heading,)
-      let nb_page = {
-        let tmp = counter("page").at(heading_loc).at(0)
-        if heading.body == bib_wording.at(s_lang.at(here())) {
-          tmp
-        } else {
-          tmp + 1
+  align(
+    v_align,
+    for heading in headings {
+      if not check_heading_in_unique(heading, unique_headings) {
+        let heading_loc = heading.location()
+        unique_headings += (heading,)
+        let nb_page = {
+          let tmp = counter("page").at(heading_loc).at(0)
+          if heading.body == bib_wording.at(s_lang.at(here())) {
+            tmp
+          } else {
+            tmp + 1
+          }
         }
-      }      
-      let content = get_n_space(heading.level - 1) + link(heading_loc)[#heading.body] + box(width: 1fr, repeat([.$space$])) + link(heading_loc)[#nb_page] + [ \ ]
-      if size != none {
-        text(size: size, content)
-      } else {
-        content
+        let content = (
+          get_n_space(heading.level - 1)
+            + link(heading_loc)[#heading.body]
+            + box(width: 1fr, repeat([.$space$]))
+            + link(heading_loc)[#nb_page]
+            + [ \ ]
+        )
+        if size != none {
+          text(size: size, content)
+        } else {
+          content
+        }
       }
-    }
-  }) 
+    },
+  )
 }
 
 #let thanks_slide() = context {
@@ -298,11 +315,11 @@
   }
   let fig = figure(
     rect(
-      width:100%,
-      stroke: ("left": 1pt+stroke_color, "rest": none),
+      width: 100%,
+      stroke: ("left": 1pt + stroke_color, "rest": none),
       fill: rgb("#f8f6fb"),
       inset: (bottom: 10pt, rest: 5pt),
-      align(left, body)
+      align(left, body),
     ),
     caption: none,
     kind: supplement(here()),
@@ -318,13 +335,13 @@
 
 // Math blocks
 
-#let lem_wording  = ("en": "Lemma", "fr": "Lemme")
+#let lem_wording = ("en": "Lemma", "fr": "Lemme")
 #let prop_wording = ("en": "Proposition", "fr": "Proposition")
-#let thm_wording  = ("en": "Theorem", "fr": "Théorème")
-#let cor_wording  = ("en": "Corollary", "fr": "Corollaire")
-#let def_wording  = ("en": "Definition", "fr": "Définition")
-#let re_wording   = ("en": "Remark", "fr": "Remarque")
-#let ex_wording   = ("en": "Example", "fr": "Exemple")
+#let thm_wording = ("en": "Theorem", "fr": "Théorème")
+#let cor_wording = ("en": "Corollary", "fr": "Corollaire")
+#let def_wording = ("en": "Definition", "fr": "Définition")
+#let re_wording = ("en": "Remark", "fr": "Remarque")
+#let ex_wording = ("en": "Example", "fr": "Exemple")
 
 
 #let lemma(name, it, label: none, eq_numbering: none) = {
@@ -332,7 +349,7 @@
 }
 
 #let proposition(name, it, label: none, eq_numbering: none) = {
-  math_block(l =>prop_wording.at(s_lang.at(l)), name, it, label, rgb("#b1255d"), eq_numbering)
+  math_block(l => prop_wording.at(s_lang.at(l)), name, it, label, rgb("#b1255d"), eq_numbering)
 }
 
 #let theorem(name, it, label: none, eq_numbering: none) = {
@@ -361,7 +378,7 @@
   set math.equation(numbering: none)
   block(
     width: 90%,
-    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$]))
+    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
   )
 }
 
@@ -373,24 +390,29 @@
   comment: none,
   content: [],
   has_stroke: true,
-  inset: 1em
+  inset: 1em,
 ) = {
   if comment == none {
     identifier
   } else {
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
-  block(width: auto, above: 0.5em, below:0.5em, {
-    let stroke = ("left": 1pt, "rest": none)
-    if not has_stroke {
-      stroke = none
-    }
-    rect(
-      stroke: stroke,
-      outset: -0.1em,
-      inset: (right: 0em, rest: inset),
+  block(
+    width: auto,
+    above: 0.5em,
+    below: 0.5em,
+    {
+      let stroke = ("left": 1pt, "rest": none)
+      if not has_stroke {
+        stroke = none
+      }
+      rect(
+        stroke: stroke,
+        outset: -0.1em,
+        inset: (right: 0em, rest: inset),
       )[#content]
-  })
+    },
+  )
 }
 
 #let for_loop(
@@ -409,7 +431,7 @@
   comment: none,
   content: [],
 ) = {
-    code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
+  code_block(identifier: [*while* #condition *do*], comment: comment, content: content)
   [*end while*]
 }
 
@@ -428,7 +450,7 @@
 }
 
 #let comment(
-  content
+  content,
 ) = {
   [#box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", content)]
 }
@@ -437,52 +459,59 @@
   keyword,
   fill: black,
   weight: "regular",
-  style: none
-  ) = {
-    if style == none {
-      text(fill: fill, weight: weight, keyword)
-    } else {
-      style(keyword)
-    }
+  style: none,
+) = {
+  if style == none {
+    text(fill: fill, weight: weight, keyword)
+  } else {
+    style(keyword)
+  }
 }
 
 #let Return = keyword([return], weight: "bold")
-#let Break  = keyword([break], weight: "bold")
+#let Break = keyword([break], weight: "bold")
 #let Continue = keyword([continue], weight: "bold")
 
 #let algorithm(
   name: none,
   input: none,
   output: none,
-  content: none
-) = {
+  content: none,
+) = context {
   set text(font: "New Computer Modern")
-  align(center, 
-    block(width: auto, {
-      align(left, {
-        counter("algorithm").step()
-        //show line: set block(above: 0.4em, below: 0.4em)
-        set par(first-line-indent: 0em)
-        box(width: 1fr, line(length: 100%, stroke: {1.5pt + black})) +  [ \ ]
-        [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black})) + [ \ ]
-        if input != none {
-          [*Input:*]
-          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
-        }
-        if output != none {
-          [*Output:*]
-          align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
-        }
+  align(
+    center,
+    block(
+      width: auto,
+      {
+        align(
+          left,
+          {
+            counter("algorithm").step()
+            //show line: set block(above: 0.4em, below: 0.4em)
+            set par(first-line-indent: 0em)
+            box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
+            [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
+            box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+            if input != none {
+              [*Input:*]
+              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+            }
+            if output != none {
+              [*Output:*]
+              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+            }
 
-        if output != none or input != none {
-          box(width: 1fr, line(length: 100%, stroke: {1pt + black})) +  [ \ ]
-        }
-        
-        [#content \ ]
-        box(width: 1fr, line(length: 100%, stroke: {1pt + black}))
-      })
-    })
+            if output != none or input != none {
+              box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+            }
+
+            [#content \ ]
+            box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
+          },
+        )
+      },
+    ),
   )
 }
 
@@ -516,7 +545,7 @@
     show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#d4244a"))
     code
   }
-  
+
   let n_comment = 0
   let n_char = 0
   let final_content = []
@@ -532,13 +561,13 @@
   if (comment_matches.len() > n_comment) {
     final_content += print_comment(comment_matches.at(n_comment).text)
   } */
-  
+
   block(
-    width:100%,
-    stroke: ("left": 1pt+rgb("#d73a4a"), "rest": none),
+    width: 100%,
+    stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
     fill: rgb("#f8f6fb"),
     inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, raw(lang: "lean4", it))
+    align(left, raw(lang: "lean4", it)),
   )
 }
 
@@ -548,38 +577,42 @@
 #let footer(loc, running_author) = {
   let page_nb = counter("page").at(loc).at(0)
 
-  let h = query(selector(heading).after(loc)).map(h => {h.body}).at(0, default: [])
+  let h = query(selector(heading).after(loc)).map(h => { h.body }).at(0, default: [])
 
   if page_nb == 0 or h == outline_wording.at(s_lang.at(loc)) {
     return []
   }
   let last_page = counter("page").final().at(0) //get_last_page_before_bib(loc)
   let max_size_bar = 50pt
-  let current_size_bar = ((page_nb - 1)/(last_page - 1)) * max_size_bar
+  let current_size_bar = ((page_nb - 1) / (last_page - 1)) * max_size_bar
 
   let box = {
     if past_bib(loc) {
       []
     } else {
-      align(left, box(
-        width: max_size_bar,
-        height: 6pt,
-        fill: rgb("#eeeeee"),
-        radius: 3pt,
-        align(left, rect(
-          width: current_size_bar,
+      align(
+        left,
+        box(
+          width: max_size_bar,
           height: 6pt,
-          fill: grad_color,
-          radius: 3pt
-        ))
-      ))
+          fill: rgb("#eeeeee"),
+          radius: 3pt,
+          align(
+            left,
+            rect(
+              width: current_size_bar,
+              height: 6pt,
+              fill: grad_color,
+              radius: 3pt,
+            ),
+          ),
+        ),
+      )
     }
   }
   grid(
     columns: (33%, 33%, 33%),
-    box,
-    align(center, text(size: 9pt, running_author)),
-    align(right, text(size: 9pt, [#page_nb]))
+    box, align(center, text(size: 9pt, running_author)), align(right, text(size: 9pt, [#page_nb])),
   )
 }
 
@@ -591,7 +624,7 @@
   text_color: rgb("#000000"),
   lang: "en",
   footer: context footer(here(), [G. Serré --- Centre Borelli]),
-  doc
+  doc,
 ) = {
   set page(
     paper: "presentation-16-9",
@@ -599,13 +632,13 @@
     footer: footer,
     background: context {
       let page_nb = counter("page").at(here()).at(0)
-      let h = query(selector(heading).before(here())).map(h => {h.body}).at(0, default: [])
+      let h = query(selector(heading).before(here())).map(h => { h.body }).at(0, default: [])
       if page_nb == 0 and h != outline_wording.at(s_lang.at(here())) {
         title_background
       } else {
         background
       }
-    }
+    },
   )
 
   // Set rules
@@ -624,16 +657,16 @@
   set enum(indent: 1em)
 
   // Reference style
-  set ref(supplement: it => {
-    let fig = it.func()
-    if fig == math.equation {
-      text(fill: black, "Eq.")
-    }
-    
-    else if fig == figure {
-      gray(it.supplement)
-    }
-  })
+  set ref(
+    supplement: it => {
+      let fig = it.func()
+      if fig == math.equation {
+        text(fill: black, "Eq.")
+      } else if fig == figure {
+        gray(it.supplement)
+      }
+    },
+  )
 
   set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
 
