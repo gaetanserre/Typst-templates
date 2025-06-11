@@ -3,24 +3,14 @@
  */
 
 
-// Utils functions
-#let range(n) = {
-  let ret = ()
-  let i = 0
-
-  while i < n {
-    ret += (i,)
-    i += 1
-  }
-  ret
-}
-
 #let TODO(it) = {
   text(fill: red, weight: "extrabold", [TODO #it])
 }
 
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
+
+#let sans_serif_font = "Noto Sans"
 
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
@@ -216,13 +206,13 @@
   }
 }
 
-#let title_slide(
+/* #let title_slide(
   title: [Title],
   subtitle: [Subtitle],
   authors: [Authors],
   emails: [Emails],
   date: none,
-  background: none,
+  logos: (),
 ) = {
   slide(
     title: none,
@@ -236,7 +226,7 @@
     breakpage: false,
   )
   counter("page").update(0)
-}
+} */
 
 #let get_n_space(n) = {
   for i in range(n) {
@@ -253,7 +243,7 @@
 }
 
 #let outline_slide(size: none, v_align: horizon) = context {
-  set page(footer: [], background: [])
+  set page(footer: none, background: none)
   set par(first-line-indent: 0em)
   [= #outline_wording.at(s_lang.at(here()))]
   let headings = query(selector(heading).after(here()), here()).slice(1, none)
@@ -290,40 +280,67 @@
 }
 
 #let thanks_slide() = context {
-  set page(footer: [], background: none)
+  set page(footer: none, background: none)
   let wording = thanks_wording.at(s_lang.at(here()))
   align(center + horizon, text(size: 20pt, wording))
 }
 
 #let trans_slide(it, subtitle: none) = {
-  set page(footer: [], background: none)
+  set page(footer: none, background: none)
   align(center + horizon, text(size: 20pt, title_style(it) + subtitle_style(subtitle)))
 }
 
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
-#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = context {
-  set text(font: "New Computer Modern")
-  let body = {
-    set math.equation(numbering: eq_numbering)
-    if name == none {
-      [*#supplement(here()).* ] + it
-    } else {
-      [*#supplement(here())* (#emph(name))*.* ] + it
-    }
+#let math_block(supplement_dict, name, it, lb, eq_numbering) = context {
+  let supplement = supplement_dict.at(s_lang.final())
+  let counter = counter(supplement)
+  counter.step()
+
+  set math.equation(numbering: eq_numbering)
+
+  let count = counter.get().at(0) + 1
+
+  let name_box = if name == none {
+    text(font: sans_serif_font, size: 15pt, [*#supplement #count*])
+  } else {
+    [
+      #text(font: sans_serif_font, size: 15pt, [*#supplement #count* --])
+      #emph(name)
+    ]
   }
+
+  let fill_color = rgb("#f7f7f7")
+
   let fig = figure(
-    rect(
-      width: 100%,
-      stroke: ("left": 1pt + stroke_color, "rest": none),
-      fill: rgb("#f8f6fb"),
-      inset: (bottom: 10pt, rest: 5pt),
-      align(left, body),
+    align(
+      left,
+      box(
+        stroke: (left: 2pt + black),
+        inset: (left: 0.5em, bottom: 0.5em),
+        [
+          #box(
+            fill: fill_color,
+            inset: (left: 0em, rest: 0.5em),
+            outset: (left: 0.5em - 1pt),
+            radius: (top-right: 0.3em),
+            name_box,
+          )
+          #v(-1.4em)
+          #rect(
+            width: 100%,
+            fill: fill_color,
+            inset: (left: 0em, rest: 0.5em),
+            outset: (bottom: 0.5em, left: 0.5em - 1pt),
+            align(left, it),
+          )
+        ],
+      ),
     ),
     caption: none,
-    kind: supplement(here()),
-    supplement: supplement(here()),
+    kind: supplement,
+    supplement: supplement,
   )
   if lb != none [
     #fig
@@ -335,50 +352,66 @@
 
 // Math blocks
 
-#let lem_wording = ("en": "Lemma", "fr": "Lemme")
-#let prop_wording = ("en": "Proposition", "fr": "Proposition")
-#let thm_wording = ("en": "Theorem", "fr": "Théorème")
-#let cor_wording = ("en": "Corollary", "fr": "Corollaire")
-#let def_wording = ("en": "Definition", "fr": "Définition")
-#let re_wording = ("en": "Remark", "fr": "Remarque")
-#let ex_wording = ("en": "Example", "fr": "Exemple")
+#let lemma(name, it, label: none, eq_numbering: none) = math_block(
+  ("en": "Lemma", "fr": "Lemme"),
+  name,
+  it,
+  label,
+  eq_numbering,
+)
 
+#let proposition(name, it, label: none, eq_numbering: none) = math_block(
+  ("en": "Proposition", "fr": "Proposition"),
+  name,
+  it,
+  label,
+  eq_numbering,
+)
 
-#let lemma(name, it, label: none, eq_numbering: none) = {
-  math_block(l => lem_wording.at(s_lang.at(l)), name, it, label, rgb("#b287a3"), eq_numbering)
-}
+#let theorem(name, it, label: none, eq_numbering: none) = math_block(
+  ("en": "Theorem", "fr": "Théorème"),
+  name,
+  it,
+  label,
+  eq_numbering,
+)
 
-#let proposition(name, it, label: none, eq_numbering: none) = {
-  math_block(l => prop_wording.at(s_lang.at(l)), name, it, label, rgb("#b1255d"), eq_numbering)
-}
+#let corollary(name, it, label: none, eq_numbering: none) = math_block(
+  ("en": "Corollary", "fr": "Corollaire"),
+  name,
+  it,
+  label,
+  eq_numbering,
+)
 
-#let theorem(name, it, label: none, eq_numbering: none) = {
-  math_block(l => thm_wording.at(s_lang.at(l)), name, it, label, rgb("#5f072a"), eq_numbering)
-}
+#let definition(name, it, label: none, eq_numbering: none) = math_block(
+  ("en": "Definition", "fr": "Définition"),
+  name,
+  it,
+  label,
+  eq_numbering,
+)
 
-#let corollary(name, it, label: none, eq_numbering: none) = {
-  math_block(l => cor_wording.at(s_lang.at(l)), name, it, label, rgb("#ffc300"), eq_numbering)
-}
+#let remark(name, it, label: none, eq_numbering: none) = math_block(
+  ("en": "Remark", "fr": "Remarque"),
+  name,
+  it,
+  label,
+  eq_numbering,
+)
 
-#let definition(name, it, label: none, eq_numbering: none) = {
-  math_block(l => def_wording.at(s_lang.at(l)), name, it, label, rgb("#bfb1c1"), eq_numbering)
-}
+#let example(it, label: none, eq_numbering: none) = math_block(
+  ("en": "Example", "fr": "Exemple"),
+  none,
+  it,
+  label,
+  eq_numbering,
+)
 
-#let remark(name, it, label: none, eq_numbering: none) = {
-  math_block(l => re_wording.at(s_lang.at(l)), name, it, label, rgb("#8380b6"), eq_numbering)
-}
-
-#let example(it, label: none, eq_numbering: none) = {
-  math_block(l => ex_wording.at(s_lang.at(l)), none, it, label, rgb("#9bc4cb"), eq_numbering)
-}
-
-#let proof(it) = {
-  set par(first-line-indent: 0em)
-  set align(center)
-  set math.equation(numbering: none)
+#let proof(it) = context {
   block(
     width: 90%,
-    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
+    align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])),
   )
 }
 
@@ -518,50 +551,7 @@
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
 /*************************************************************************************************/
 
-/***LEAN***/
-// #let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 12pt, cont)
-
 #let lean_block(it) = {
-  /* set par(first-line-indent: 0em)
-  show par: set block(spacing: 0em)
-  set text(font: "FiraCode Nerd Font", size: 12pt)
-  let reg_comment = regex(`(\/-[^-/]*-\/)|(--.*)`.text)
-  let comment_matches = cont.matches(reg_comment)
-  let cont_without_comments = cont.split(reg_comment)
-
-  let print_comment(comment) = {
-    set par(first-line-indent: 0em)
-    show regex("[^\*]\*[^\*]+\*(\n | [^\*])"): set text(style: "italic", fill: black)
-    show regex("`.+`"): set text(fill: rgb("#ad7fa8"))
-    show regex("\*\*[^\*]+\*\*"): set text(weight: "bold", fill: black)
-    text(fill: rgb("#6a737d"), comment)
-  }
-
-  let print_code(code) = {
-    set par(first-line-indent: 0em)
-    show regex("(lemma|theorem|by|sorry|have|def|let|noncomputable|variable|with|example|fun|at|show|class|instance|where)(\s|$)"): set text(fill: rgb("#8b3fef"))
-    show regex("Type"): set text(fill: rgb("#8b3fef"))
-    show regex("(lemma|theorem|def|class)\s\w+"): set text(fill: rgb("#3475f5"))
-    show regex("\(|\[|\{|\}|\]|\)"): set text(fill: rgb("#d4244a"))
-    code
-  }
-
-  let n_comment = 0
-  let n_char = 0
-  let final_content = []
-  for i in range(cont_without_comments.len()) {
-    while (comment_matches.len() > n_comment and (comment_matches.at(n_comment).start == n_char or comment_matches.at(n_comment).start == 1)) {
-      final_content += print_comment(comment_matches.at(n_comment).text)
-      n_char += comment_matches.at(n_comment).text.len()
-      n_comment += 1
-    }
-    final_content += print_code(cont_without_comments.at(i))
-    n_char += cont_without_comments.at(i).len()
-  }
-  if (comment_matches.len() > n_comment) {
-    final_content += print_comment(comment_matches.at(n_comment).text)
-  } */
-
   block(
     width: 100%,
     stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
@@ -617,19 +607,19 @@
 }
 
 #let config(
-  background: none,
-  title_background: none,
+  // background: none,
+  // title_background: none,
   title_color: title_color,
   subtitle_color: subtitle_color,
   text_color: rgb("#000000"),
   lang: "en",
-  footer: context footer(here(), [G. Serré --- Centre Borelli]),
+  // footer: context footer(here(), [G. Serré --- Centre Borelli]),
   doc,
 ) = {
   set page(
     paper: "presentation-16-9",
     numbering: "1",
-    footer: footer,
+    /* footer: footer,
     background: context {
       let page_nb = counter("page").at(here()).at(0)
       let h = query(selector(heading).before(here())).map(h => { h.body }).at(0, default: [])
@@ -638,14 +628,14 @@
       } else {
         background
       }
-    },
+    }, */
   )
 
   // Set rules
 
   set par(justify: true)
 
-  set text(font: "Noto Sans", size: 15pt, fill: text_color, lang: lang)
+  set text(font: sans_serif_font, size: 15pt, fill: text_color, lang: lang)
 
   set heading(numbering: none)
 
@@ -674,7 +664,7 @@
 
   // Show rules
   show ref: set text(fill: rgb("#ff0000"))
-  show link: set text(fill: subtitle_color)
+  show link: set text(fill: rgb("#3626a7"))
   show cite: set text(fill: rgb("#4361ee"))
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
