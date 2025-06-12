@@ -562,7 +562,8 @@
 }
 
 #let gray(it) = text(fill: rgb("#888888"), it)
-#let grad_color = gradient.linear(rgb("#665bad"), rgb("#b6a4da"), relative: "parent")
+
+#let grad_color = gradient.linear(rgb("#5165aa"), rgb("#8498dd"), relative: "parent")
 
 #let footer(loc, running_author) = {
   let page_nb = counter("page").at(loc).at(0)
@@ -607,28 +608,15 @@
 }
 
 #let config(
-  // background: none,
-  // title_background: none,
   title_color: title_color,
   subtitle_color: subtitle_color,
   text_color: rgb("#000000"),
   lang: "en",
-  // footer: context footer(here(), [G. Serré --- Centre Borelli]),
   doc,
 ) = {
   set page(
     paper: "presentation-16-9",
     numbering: "1",
-    /* footer: footer,
-    background: context {
-      let page_nb = counter("page").at(here()).at(0)
-      let h = query(selector(heading).before(here())).map(h => { h.body }).at(0, default: [])
-      if page_nb == 0 and h != outline_wording.at(s_lang.at(here())) {
-        title_background
-      } else {
-        background
-      }
-    }, */
   )
 
   // Set rules
@@ -639,11 +627,13 @@
 
   set heading(numbering: none)
 
-  set cite(style: "chicago-author-date")
+  set cite(style: "apa.csl")
 
-  set math.equation(numbering: "(1)")
+  set bibliography(style: "apa.csl")
 
-  set list(marker: ($gt.tri$, $arrow.r.curve$))
+  set math.equation(numbering: none)
+
+  set list(marker: ([•], $arrow.r.curve$))
   set enum(indent: 1em)
 
   // Reference style
@@ -664,7 +654,7 @@
 
   // Show rules
   show ref: set text(fill: rgb("#ff0000"))
-  show link: set text(fill: rgb("#3626a7"))
+  show link: set text(fill: title_color)
   show cite: set text(fill: rgb("#4361ee"))
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
