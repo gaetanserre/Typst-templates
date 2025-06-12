@@ -346,14 +346,14 @@
 
   let page_nb = {
     if first_page_nb {
-      "1"
+      "-- 1 --"
     } else {
       (..nums) => {
         let nb = nums.pos().map(str).at(0)
         if nb == "1" {
           none
         } else {
-          nb
+          [-- #nb --]
         }
       }
     }
