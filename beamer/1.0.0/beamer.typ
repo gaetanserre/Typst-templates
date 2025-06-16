@@ -80,10 +80,10 @@
 #let slide(
   title: none,
   subtitle: none,
-  content: none,
   h_block_align: center,
   v_block_align: horizon,
   breakpage: true,
+  content,
 ) = context {
   set par(leading: 20pt)
   if title != none {
