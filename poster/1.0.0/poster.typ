@@ -18,11 +18,9 @@
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement, name, it, lb, stroke_color, eq_numbering) = {
+#let math_block(supplement, name, it, lb, stroke_color) = {
   let counter = counter(supplement)
   counter.step()
-
-  set math.equation(numbering: eq_numbering)
 
   let name_box = if name == none {
     text(fill: stroke_color, [*#supplement*])
@@ -64,66 +62,59 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block(
+#let lemma(name, it, label: none) = math_block(
   "Lemma",
   name,
   it,
   label,
   rgb("#b287a3"),
-  eq_numbering,
 )
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block(
+#let proposition(name, it, label: none) = math_block(
   "Proposition",
   name,
   it,
   label,
   rgb("#b1255d"),
-  eq_numbering,
 )
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block(
+#let theorem(name, it, label: none) = math_block(
   "Theorem",
   name,
   it,
   label,
   rgb("#a4252a"),
-  eq_numbering,
 )
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block(
+#let corollary(name, it, label: none) = math_block(
   "Corollary",
   name,
   it,
   label,
   rgb("#ffc300"),
-  eq_numbering,
 )
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block(
+#let definition(name, it, label: none) = math_block(
   "Definition",
   name,
   it,
   label,
   rgb("#78a3ef"),
-  eq_numbering,
 )
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block(
+#let remark(name, it, label: none) = math_block(
   "Remark",
   name,
   it,
   label,
   rgb("#8380b6"),
-  eq_numbering,
 )
 
-#let example(it, label: none, eq_numbering: none) = math_block("Example", none, it, label, rgb("#bfb1c1"), eq_numbering)
+#let example(it, label: none) = math_block("Example", none, it, label, rgb("#bfb1c1"))
 
 #let proof(it) = {
   set par(first-line-indent: 0em)
   set align(center)
-  set math.equation(numbering: none)
   block(
     width: 90%,
     align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
@@ -386,7 +377,23 @@
 
   set heading(numbering: none)
 
-  set math.equation(numbering: "(1)")
+  // Display math equations only if they have a label
+  show: it => {
+    let state = state("equation-labels", ())
+    show math.equation.where(block: true): it => {
+      if it.has("label") {
+        state.update(labels => (..labels, it.label))
+      }
+      it
+    }
+    context if state.final() != () {
+      let labeled = state.final().map(label => math.equation.where(label: label))
+      show selector.or(..labeled): set math.equation(numbering: "(1)", supplement: "Eq.")
+      it
+    } else {
+      it
+    }
+  }
 
   set cite(style: "ieee")
 

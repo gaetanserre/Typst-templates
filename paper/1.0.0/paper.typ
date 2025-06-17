@@ -25,12 +25,10 @@
 
 #let heading_count = counter(heading)
 
-#let math_block(supplement_dict, name, it, lb, eq_numbering) = context {
+#let math_block(supplement_dict, name, it, lb) = context {
   let supplement = supplement_dict.at(s_lang.final())
   let counter = counter(supplement)
   counter.step()
-
-  set math.equation(numbering: eq_numbering)
 
   let count = counter.get().at(0) + 1
 
@@ -84,60 +82,53 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block(
+#let lemma(name, it, label: none) = math_block(
   ("en": "Lemma", "fr": "Lemme"),
   name,
   it,
   label,
-  eq_numbering,
 )
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block(
+#let proposition(name, it, label: none) = math_block(
   ("en": "Proposition", "fr": "Proposition"),
   name,
   it,
   label,
-  eq_numbering,
 )
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block(
+#let theorem(name, it, label: none) = math_block(
   ("en": "Theorem", "fr": "Théorème"),
   name,
   it,
   label,
-  eq_numbering,
 )
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block(
+#let corollary(name, it, label: none) = math_block(
   ("en": "Corollary", "fr": "Corollaire"),
   name,
   it,
   label,
-  eq_numbering,
 )
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block(
+#let definition(name, it, label: none) = math_block(
   ("en": "Definition", "fr": "Définition"),
   name,
   it,
   label,
-  eq_numbering,
 )
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block(
+#let remark(name, it, label: none) = math_block(
   ("en": "Remark", "fr": "Remarque"),
   name,
   it,
   label,
-  eq_numbering,
 )
 
-#let example(it, label: none, eq_numbering: none) = math_block(
+#let example(it, label: none) = math_block(
   ("en": "Example", "fr": "Exemple"),
   none,
   it,
   label,
-  eq_numbering,
 )
 
 #let proof(it) = context {
@@ -294,10 +285,6 @@
   )
 }
 
-#let equa(it) = {
-  math.equation(block: true, numbering: "(1)", it)
-}
-
 #let heading_numbering = state("heading_numbering", "1.1")
 
 #let appendix() = {
@@ -385,7 +372,23 @@
     },
   )
 
-  set math.equation(numbering: "(1)")
+  // Display math equations only if they have a label
+  show: it => {
+    let state = state("equation-labels", ())
+    show math.equation.where(block: true): it => {
+      if it.has("label") {
+        state.update(labels => (..labels, it.label))
+      }
+      it
+    }
+    context if state.final() != () {
+      let labeled = state.final().map(label => math.equation.where(label: label))
+      show selector.or(..labeled): set math.equation(numbering: "(1)", supplement: "Eq.")
+      it
+    } else {
+      it
+    }
+  }
 
   set cite(style: "chicago-author-date")
 
