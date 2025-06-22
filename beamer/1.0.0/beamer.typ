@@ -10,7 +10,7 @@
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
-#let sans_serif_font = "Noto Sans"
+#let sans_serif_font = "SF Pro Display"
 
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
@@ -107,12 +107,9 @@
 
   set par(leading: 0.65em)
 
-  align(
-    h_block_align + v_block_align,
-    box([
-      #content
-    ]),
-  )
+  align(h_block_align + v_block_align, box([
+    #content
+  ]))
 
   if breakpage {
     pagebreak()
@@ -193,40 +190,12 @@
   let idx = ()
   for i in range(items.len()) {
     idx += (i,)
-    slide(
-      title: title,
-      content: align(
-        left,
-        bullet(
-          idx,
-          last_bullet: last_bullet,
-        ),
-      ),
-    )
+    slide(title: title, content: align(left, bullet(
+      idx,
+      last_bullet: last_bullet,
+    )))
   }
 }
-
-/* #let title_slide(
-  title: [Title],
-  subtitle: [Subtitle],
-  authors: [Authors],
-  emails: [Emails],
-  date: none,
-  logos: (),
-) = {
-  slide(
-    title: none,
-    content: [
-      #text(size: 30pt, [#title])\
-      #text(15pt, style: "italic", subtitle)\
-      #authors\
-      #emails\
-      #date
-    ],
-    breakpage: false,
-  )
-  counter("page").update(0)
-} */
 
 #let get_n_space(n) = {
   for i in range(n) {
@@ -248,35 +217,32 @@
   [= #outline_wording.at(s_lang.at(here()))]
   let headings = query(selector(heading).after(here()), here()).slice(1, none)
   let unique_headings = ()
-  align(
-    v_align,
-    for heading in headings {
-      if not check_heading_in_unique(heading, unique_headings) {
-        let heading_loc = heading.location()
-        unique_headings += (heading,)
-        let nb_page = {
-          let tmp = counter("page").at(heading_loc).at(0)
-          if heading.body == bib_wording.at(s_lang.at(here())) {
-            tmp
-          } else {
-            tmp + 1
-          }
-        }
-        let content = (
-          get_n_space(heading.level - 1)
-            + link(heading_loc)[#heading.body]
-            + box(width: 1fr, repeat([.$space$]))
-            + link(heading_loc)[#nb_page]
-            + [ \ ]
-        )
-        if size != none {
-          text(size: size, content)
+  align(v_align, for heading in headings {
+    if not check_heading_in_unique(heading, unique_headings) {
+      let heading_loc = heading.location()
+      unique_headings += (heading,)
+      let nb_page = {
+        let tmp = counter("page").at(heading_loc).at(0)
+        if heading.body == bib_wording.at(s_lang.at(here())) {
+          tmp
         } else {
-          content
+          tmp + 1
         }
       }
-    },
-  )
+      let content = (
+        get_n_space(heading.level - 1)
+          + link(heading_loc)[#heading.body]
+          + box(width: 1fr, repeat([.$space$]))
+          + link(heading_loc)[#nb_page]
+          + [ \ ]
+      )
+      if size != none {
+        text(size: size, content)
+      } else {
+        content
+      }
+    }
+  })
 }
 
 #let thanks_slide() = context {
@@ -293,15 +259,17 @@
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
-#let math_block(supplement_dict, name, it, lb) = context {
+#let math_block(supplement_dict, name, it, lb, eq_numbering) = context {
   let supplement = supplement_dict.at(s_lang.final())
   let counter = counter(supplement)
   counter.step()
 
+  set math.equation(numbering: eq_numbering)
+
   let count = counter.get().at(0) + 1
 
   let name_box = if name == none {
-    text(font: sans_serif_font, size: 15pt, [*#supplement #count*])
+    text(font: "Noto Emoji", size: 15pt, [*#supplement #count*])
   } else {
     [
       #text(font: sans_serif_font, size: 15pt, [*#supplement #count* --])
@@ -312,30 +280,23 @@
   let fill_color = rgb("#f7f7f7")
 
   let fig = figure(
-    align(
-      left,
-      box(
-        stroke: (left: 2pt + black),
-        inset: (left: 0.5em, bottom: 0.5em),
-        [
-          #box(
-            fill: fill_color,
-            inset: (left: 0em, rest: 0.5em),
-            outset: (left: 0.5em - 1pt),
-            radius: (top-right: 0.3em),
-            name_box,
-          )
-          #v(-1.4em)
-          #rect(
-            width: 100%,
-            fill: fill_color,
-            inset: (left: 0em, rest: 0.5em),
-            outset: (bottom: 0.5em, left: 0.5em - 1pt),
-            align(left, it),
-          )
-        ],
-      ),
-    ),
+    align(left, box(stroke: (left: 2pt + black), inset: (left: 0.5em, bottom: 0.5em), [
+      #box(
+        fill: fill_color,
+        inset: (left: 0em, rest: 0.5em),
+        outset: (left: 0.5em - 1pt),
+        radius: (top-right: 0.3em),
+        name_box,
+      )
+      #v(-1.4em)
+      #rect(
+        width: 100%,
+        fill: fill_color,
+        inset: (left: 0em, rest: 0.5em),
+        outset: (bottom: 0.5em, left: 0.5em - 1pt),
+        align(left, it),
+      )
+    ])),
     caption: none,
     kind: supplement,
     supplement: supplement,
@@ -350,60 +311,64 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none) = math_block(
+#let lemma(name, it, label: none, eq_numbering: none) = math_block(
   ("en": "Lemma", "fr": "Lemme"),
   name,
   it,
   label,
+  eq_numbering,
 )
 
-#let proposition(name, it, label: none) = math_block(
+#let proposition(name, it, label: none, eq_numbering: none) = math_block(
   ("en": "Proposition", "fr": "Proposition"),
   name,
   it,
   label,
+  eq_numbering,
 )
 
-#let theorem(name, it, label: none) = math_block(
+#let theorem(name, it, label: none, eq_numbering: none) = math_block(
   ("en": "Theorem", "fr": "Théorème"),
   name,
   it,
   label,
+  eq_numbering,
 )
 
-#let corollary(name, it, label: none) = math_block(
+#let corollary(name, it, label: none, eq_numbering: none) = math_block(
   ("en": "Corollary", "fr": "Corollaire"),
   name,
   it,
   label,
+  eq_numbering,
 )
 
-#let definition(name, it, label: none) = math_block(
+#let definition(name, it, label: none, eq_numbering: none) = math_block(
   ("en": "Definition", "fr": "Définition"),
   name,
   it,
   label,
+  eq_numbering,
 )
 
-#let remark(name, it, label: none) = math_block(
+#let remark(name, it, label: none, eq_numbering: none) = math_block(
   ("en": "Remark", "fr": "Remarque"),
   name,
   it,
   label,
+  eq_numbering,
 )
 
-#let example(it, label: none) = math_block(
+#let example(it, label: none, eq_numbering: none) = math_block(
   ("en": "Example", "fr": "Exemple"),
   none,
   it,
   label,
+  eq_numbering,
 )
 
 #let proof(it) = context {
-  block(
-    width: 90%,
-    align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])),
-  )
+  block(width: 90%, align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])))
 }
 
 /*********************************ALGORITHM ENVIRONMENT*******************************************/
@@ -421,22 +386,13 @@
   } else {
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
-  block(
-    width: auto,
-    above: 0.5em,
-    below: 0.5em,
-    {
-      let stroke = ("left": 1pt, "rest": none)
-      if not has_stroke {
-        stroke = none
-      }
-      rect(
-        stroke: stroke,
-        outset: -0.1em,
-        inset: (right: 0em, rest: inset),
-      )[#content]
-    },
-  )
+  block(width: auto, above: 0.5em, below: 0.5em, {
+    let stroke = ("left": 1pt, "rest": none)
+    if not has_stroke {
+      stroke = none
+    }
+    rect(stroke: stroke, outset: -0.1em, inset: (right: 0em, rest: inset))[#content]
+  })
 }
 
 #let for_loop(
@@ -503,40 +459,31 @@
   content: none,
 ) = context {
   set text(font: "New Computer Modern")
-  align(
-    center,
-    block(
-      width: auto,
-      {
-        align(
-          left,
-          {
-            counter("algorithm").step()
-            //show line: set block(above: 0.4em, below: 0.4em)
-            set par(first-line-indent: 0em)
-            box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
-            [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
-            box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
-            if input != none {
-              [*Input:*]
-              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
-            }
-            if output != none {
-              [*Output:*]
-              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
-            }
+  align(center, block(width: auto, {
+    align(left, {
+      counter("algorithm").step()
+      //show line: set block(above: 0.4em, below: 0.4em)
+      set par(first-line-indent: 0em)
+      box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
+      [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
+      box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+      if input != none {
+        [*Input:*]
+        align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+      }
+      if output != none {
+        [*Output:*]
+        align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+      }
 
-            if output != none or input != none {
-              box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
-            }
+      if output != none or input != none {
+        box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+      }
 
-            [#content \ ]
-            box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
-          },
-        )
-      },
-    ),
-  )
+      [#content \ ]
+      box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
+    })
+  }))
 }
 
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
@@ -572,24 +519,12 @@
     if past_bib(loc) {
       []
     } else {
-      align(
-        left,
-        box(
-          width: max_size_bar,
-          height: 6pt,
-          fill: rgb("#eeeeee"),
-          radius: 3pt,
-          align(
-            left,
-            rect(
-              width: current_size_bar,
-              height: 6pt,
-              fill: grad_color,
-              radius: 3pt,
-            ),
-          ),
-        ),
-      )
+      align(left, box(width: max_size_bar, height: 6pt, fill: rgb("#eeeeee"), radius: 3pt, align(left, rect(
+        width: current_size_bar,
+        height: 6pt,
+        fill: grad_color,
+        radius: 3pt,
+      ))))
     }
   }
   grid(
@@ -622,38 +557,20 @@
 
   set bibliography(style: "apa.csl")
 
-  // Display math equations only if they have a label
-  show: it => {
-    let state = state("equation-labels", ())
-    show math.equation.where(block: true): it => {
-      if it.has("label") {
-        state.update(labels => (..labels, it.label))
-      }
-      it
-    }
-    context if state.final() != () {
-      let labeled = state.final().map(label => math.equation.where(label: label))
-      show selector.or(..labeled): set math.equation(numbering: "(1)", supplement: "Eq.")
-      it
-    } else {
-      it
-    }
-  }
+  set math.equation(numbering: none)
 
   set list(marker: ([•], $arrow.r.curve$))
   set enum(indent: 1em)
 
   // Reference style
-  set ref(
-    supplement: it => {
-      let fig = it.func()
-      if fig == math.equation {
-        text(fill: black, "Eq.")
-      } else if fig == figure {
-        gray(it.supplement)
-      }
-    },
-  )
+  set ref(supplement: it => {
+    let fig = it.func()
+    if fig == math.equation {
+      text(fill: black, "Eq.")
+    } else if fig == figure {
+      gray(it.supplement)
+    }
+  })
 
   set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
 

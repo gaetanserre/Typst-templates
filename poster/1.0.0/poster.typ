@@ -29,25 +29,15 @@
   }
 
   let fig = figure(
-    align(
-      left,
-      box(
-        stroke: (left: 5pt + stroke_color),
-        inset: (left: 0.5em, bottom: 0.5em),
-        [
-          #box(fill: rgb("#fcfcfc"), inset: (left: 0em, rest: 0.5em), radius: (top-right: 0.3em), name_box),
-          #v(-1.4em)
-          #set text(font: "New Computer Modern", size: 37pt)
-          #rect(
-            width: 100%,
-            fill: rgb("#fcfcfc"),
-            inset: (left: 0em, rest: 0.5em),
-            outset: (bottom: 0.5em),
-            align(left, it),
-          )
-        ],
-      ),
-    ),
+    align(left, box(stroke: (left: 5pt + stroke_color), inset: (left: 0.5em, bottom: 0.5em), [
+      #box(fill: rgb("#fcfcfc"), inset: (left: 0em, rest: 0.5em), radius: (top-right: 0.3em), name_box),
+      #v(-1.4em)
+      #set text(font: "New Computer Modern", size: 37pt)
+      #rect(width: 100%, fill: rgb("#fcfcfc"), inset: (left: 0em, rest: 0.5em), outset: (bottom: 0.5em), align(
+        left,
+        it,
+      ))
+    ])),
     caption: none,
     kind: supplement,
     supplement: supplement,
@@ -62,63 +52,24 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none) = math_block(
-  "Lemma",
-  name,
-  it,
-  label,
-  rgb("#b287a3"),
-)
+#let lemma(name, it, label: none) = math_block("Lemma", name, it, label, rgb("#b287a3"))
 
-#let proposition(name, it, label: none) = math_block(
-  "Proposition",
-  name,
-  it,
-  label,
-  rgb("#b1255d"),
-)
+#let proposition(name, it, label: none) = math_block("Proposition", name, it, label, rgb("#b1255d"))
 
-#let theorem(name, it, label: none) = math_block(
-  "Theorem",
-  name,
-  it,
-  label,
-  rgb("#a4252a"),
-)
+#let theorem(name, it, label: none) = math_block("Theorem", name, it, label, rgb("#a4252a"))
 
-#let corollary(name, it, label: none) = math_block(
-  "Corollary",
-  name,
-  it,
-  label,
-  rgb("#ffc300"),
-)
+#let corollary(name, it, label: none) = math_block("Corollary", name, it, label, rgb("#ffc300"))
 
-#let definition(name, it, label: none) = math_block(
-  "Definition",
-  name,
-  it,
-  label,
-  rgb("#78a3ef"),
-)
+#let definition(name, it, label: none) = math_block("Definition", name, it, label, rgb("#78a3ef"))
 
-#let remark(name, it, label: none) = math_block(
-  "Remark",
-  name,
-  it,
-  label,
-  rgb("#8380b6"),
-)
+#let remark(name, it, label: none) = math_block("Remark", name, it, label, rgb("#8380b6"))
 
 #let example(it, label: none) = math_block("Example", none, it, label, rgb("#bfb1c1"))
 
 #let proof(it) = {
   set par(first-line-indent: 0em)
   set align(center)
-  block(
-    width: 90%,
-    align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])),
-  )
+  block(width: 90%, align(left, [_Proof._ $space$] + it + align(right, text()[$qed$])))
 }
 
 
@@ -137,22 +88,13 @@
   } else {
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
-  block(
-    width: auto,
-    above: 0.5em,
-    below: 0.5em,
-    {
-      let stroke = (left: black + 1pt, rest: none)
-      if not has_stroke {
-        stroke = none
-      }
-      rect(
-        stroke: stroke,
-        outset: -0.1em,
-        inset: (right: 0em, left: 1em, rest: inset),
-      )[#content]
-    },
-  )
+  block(width: auto, above: 0.5em, below: 0.5em, {
+    let stroke = (left: black + 1pt, rest: none)
+    if not has_stroke {
+      stroke = none
+    }
+    rect(stroke: stroke, outset: -0.1em, inset: (right: 0em, left: 1em, rest: inset))[#content]
+  })
 }
 
 #let for_loop(
@@ -226,41 +168,32 @@
   output: none,
   content: [],
 ) = {
-  align(
-    center,
-    block(
-      width: auto,
-      {
-        align(
-          left,
-          {
-            counter("algorithm").step()
-            //show line: set block(above: 0.4em, below: 0.4em)
-            set par(first-line-indent: 0em)
-            box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
-            [*Algorithm:* #smallcaps(name) \ ]
-            v(-1.2em)
-            box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
-            if input != none {
-              [*Input:*]
-              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
-            }
-            if output != none {
-              [*Output:*]
-              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
-            }
+  align(center, block(width: auto, {
+    align(left, {
+      counter("algorithm").step()
+      //show line: set block(above: 0.4em, below: 0.4em)
+      set par(first-line-indent: 0em)
+      box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
+      [*Algorithm:* #smallcaps(name) \ ]
+      v(-1.2em)
+      box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+      if input != none {
+        [*Input:*]
+        align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+      }
+      if output != none {
+        [*Output:*]
+        align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+      }
 
-            if output != none or input != none {
-              box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
-            }
+      if output != none or input != none {
+        box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+      }
 
-            [#content \ ]
-            box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
-          },
-        )
-      },
-    ),
-  )
+      [#content \ ]
+      box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
+    })
+  }))
 }
 
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
@@ -360,16 +293,14 @@
   background: none,
   doc,
 ) = {
-  let sans_serif_font = "Noto Sans"
+  let sans_serif_font = "SF Pro Display"
 
   // Set rules
-  set page(
-    paper: "a0",
-    header: none,
-    numbering: none,
-    background: background,
-    margin: (top: 3em, bottom: 2em, rest: 3em),
-  )
+  set page(paper: "a0", header: none, numbering: none, background: background, margin: (
+    top: 3em,
+    bottom: 2em,
+    rest: 3em,
+  ))
 
   set par(justify: true, first-line-indent: 0em)
 
@@ -401,16 +332,14 @@
   set enum(indent: 1em)
 
   // Reference style
-  set ref(
-    supplement: it => {
-      let fig = it.func()
-      if fig == math.equation {
-        [Eq.]
-      } else {
-        it.supplement
-      }
-    },
-  )
+  set ref(supplement: it => {
+    let fig = it.func()
+    if fig == math.equation {
+      [Eq.]
+    } else {
+      it.supplement
+    }
+  })
 
   set outline(indent: auto)
   set outline.entry(fill: repeat([.$space$]))
@@ -482,48 +411,36 @@
 
 
   // Title & subtitle
-  align(
-    left,
-    {
-      text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font, title)
-      if subtitle != none {
-        text(30pt)[ \ #emph(subtitle)]
-      }
-    },
-  )
+  align(left, {
+    text(size: 70pt, fill: white, weight: "bold", font: sans_serif_font, title)
+    if subtitle != none {
+      text(30pt)[ \ #emph(subtitle)]
+    }
+  })
 
   // Authors
   if authors == none {
     v(-1em)
-    align(
-      left,
-      text(size: 50pt, fill: white, font: sans_serif_font)[
-        Gaëtan Serré \
-        #text(size: 30pt)[
-          École Normale Supérieure Paris-Saclay, Centre Borelli, MLMDA Team
-        ]
-      ],
-    )
+    align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
+      Gaëtan Serré \
+      #text(size: 30pt)[
+        École Normale Supérieure Paris-Saclay, Centre Borelli, MLMDA Team
+      ]
+    ])
   } else {
     for author in authors {
       v(-1em)
-      align(
-        left,
-        text(size: 50pt, fill: white, font: sans_serif_font)[
-          #author.name \
-          #text(
-            size: 30pt,
-            [
-              #author.affiliation \
-              #v(-1em)
-              #text(font: "CMU Typewriter Text")[
-                #link("mailto:" + author.email)
-              ]
-            ],
-          )
+      align(left, text(size: 50pt, fill: white, font: sans_serif_font)[
+        #author.name \
+        #text(size: 30pt, [
+          #author.affiliation \
+          #v(-1em)
+          #text(font: "CMU Typewriter Text")[
+            #link("mailto:" + author.email)
+          ]
+        ])
 
-        ],
-      )
+      ])
     }
   }
 
