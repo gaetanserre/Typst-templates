@@ -3,10 +3,14 @@
  */
 
 
-// Utils functions
+#let sans_serif_font = "Noto Sans"
 
 #let TODO(it) = {
-  text(fill: red, weight: "extrabold", [TODO #it])
+  let color = rgb("#d4bb65")
+  box(width: 100%, stroke: 3pt + color, inset: 0.5em, [
+    #text(fill: color, font: sans_serif_font, underline(stroke: 1.5pt, offset: 2pt, [*TODO!!*])) \
+    #it
+  ])
 }
 
 #let link_note(url, text) = {
@@ -18,25 +22,27 @@
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
 #let proof_wording = ("en": [Proof], "fr": [Preuve])
 
-#let sans_serif_font = "Noto Sans"
-
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
-#let heading_count = counter(heading)
-
-#let math_block(supplement_dict, name, it, lb) = context {
+#let math_block(supplement_dict, name, it, lb, numbering: true) = context {
   let supplement = supplement_dict.at(s_lang.final())
   let counter = counter(supplement)
-  counter.step()
-
-  let count = counter.get().at(0) + 1
+  let prefix = {
+    if numbering {
+      counter.step()
+      let count = counter.get().at(0) + 1
+      [*#supplement #count*]
+    } else {
+      [*#supplement*]
+    }
+  }
 
   let name_box = if name == none {
-    text(font: sans_serif_font, size: 10pt, [*#supplement #count*])
+    text(font: sans_serif_font, size: 10pt, prefix)
   } else {
     [
-      #text(font: sans_serif_font, size: 10pt, [*#supplement #count* --])
+      #text(font: sans_serif_font, size: 10pt, [#prefix --])
       #emph(name)
     ]
   }
@@ -44,30 +50,24 @@
   let fill_color = rgb("#f7f7f7")
 
   let fig = figure(
-    align(
-      left,
-      box(
-        stroke: (left: 2pt + black),
-        inset: (left: 0.5em, bottom: 0.5em),
-        [
-          #box(
-            fill: fill_color,
-            inset: (left: 0em, rest: 0.5em),
-            outset: (left: 0.5em - 1pt),
-            radius: (top-right: 0.3em),
-            name_box,
-          )
-          #v(-1.4em)
-          #rect(
-            width: 100%,
-            fill: fill_color,
-            inset: (left: 0em, rest: 0.5em),
-            outset: (bottom: 0.5em, left: 0.5em - 1pt),
-            align(left, it),
-          )
-        ],
-      ),
-    ),
+    align(left, box(stroke: (left: 2pt + black), inset: (left: 0.5em, bottom: 0.5em), [
+      #box(
+        fill: fill_color,
+        inset: (left: 0em, rest: 0.5em),
+        outset: (left: 0.5em - 1pt),
+        radius: (top-right: 0.3em),
+        name_box,
+      )
+      #v(-1.4em)
+      #rect(
+        width: 100%,
+        fill: fill_color,
+        inset: (left: 0em, rest: 0.5em),
+        outset: (bottom: 0.5em, left: 0.5em - 1pt),
+        radius: (right: 0.3em),
+        align(left, it),
+      )
+    ])),
     caption: none,
     kind: supplement,
     supplement: supplement,
@@ -117,25 +117,24 @@
   label,
 )
 
-#let remark(name, it, label: none) = math_block(
+#let remark(it, label: none, numbering: false) = math_block(
   ("en": "Remark", "fr": "Remarque"),
-  name,
+  none,
   it,
   label,
+  numbering: numbering,
 )
 
-#let example(it, label: none) = math_block(
+#let example(it, label: none, numbering: false) = math_block(
   ("en": "Example", "fr": "Exemple"),
   none,
   it,
   label,
+  numbering: numbering,
 )
 
 #let proof(it) = context {
-  block(
-    width: 90%,
-    align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])),
-  )
+  block(width: 90%, align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])))
 }
 
 
@@ -154,22 +153,13 @@
   } else {
     [#identifier #box(width: 1fr, repeat(" ")) #text(fill: rgb("#6c6c6c"), style: "italic", comment)]
   }
-  block(
-    width: auto,
-    above: 0.5em,
-    below: 0.5em,
-    {
-      let stroke = ("left": 1pt, "rest": none)
-      if not has_stroke {
-        stroke = none
-      }
-      rect(
-        stroke: stroke,
-        outset: -0.1em,
-        inset: (right: 0em, rest: inset),
-      )[#content]
-    },
-  )
+  block(width: auto, above: 0.5em, below: 0.5em, {
+    let stroke = ("left": 1pt, "rest": none)
+    if not has_stroke {
+      stroke = none
+    }
+    rect(stroke: stroke, outset: -0.1em, inset: (right: 0em, rest: inset))[#content]
+  })
 }
 
 #let for_loop(
@@ -233,40 +223,31 @@
   output: none,
   content: [],
 ) = {
-  align(
-    center,
-    block(
-      width: auto,
-      {
-        align(
-          left,
-          {
-            counter("algorithm").step()
-            //show line: set block(above: 0.4em, below: 0.4em)
-            set par(first-line-indent: 0em)
-            box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
-            [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
-            box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
-            if input != none {
-              [*Input:*]
-              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
-            }
-            if output != none {
-              [*Output:*]
-              align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
-            }
+  align(center, block(width: auto, {
+    align(left, {
+      counter("algorithm").step()
+      //show line: set block(above: 0.4em, below: 0.4em)
+      set par(first-line-indent: 0em)
+      box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
+      [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
+      box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+      if input != none {
+        [*Input:*]
+        align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, input)))
+      }
+      if output != none {
+        [*Output:*]
+        align(center, block(width: 95%, above: 0.5em, below: 0.5em, align(left, output)))
+      }
 
-            if output != none or input != none {
-              box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
-            }
+      if output != none or input != none {
+        box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
+      }
 
-            [#content \ ]
-            box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
-          },
-        )
-      },
-    ),
-  )
+      [#content \ ]
+      box(width: 1fr, line(length: 100%, stroke: { 1pt + black }))
+    })
+  }))
 }
 
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
@@ -287,12 +268,17 @@
 
 #let heading_numbering = state("heading_numbering", "1.1")
 
-#let appendix() = {
+#let nonumber_headings = state("nonumber_headings", ())
+
+#let nonumber_heading(it) = context {
+  nonumber_headings.update(headings => (..headings, it.body))
   set heading(numbering: none)
-  [= Appendix]
-  v(-1em)
-  counter(heading).update(0)
+  it
+}
+
+#let appendix() = {
   heading_numbering.update("A.1")
+  nonumber_heading([= Appendix])
 }
 
 #let config(
@@ -309,6 +295,10 @@
   doc,
 ) = context {
   s_lang.update(lang)
+
+  let bib_wording_final = bib_wording.at(s_lang.final())
+  let outline_wording_final = outline_wording.at(s_lang.final())
+  nonumber_headings.update(headings => (headings, bib_wording_final, outline_wording_final))
 
   // Odd-switching header function
   let header_loc = none
@@ -333,14 +323,14 @@
 
   let page_nb = {
     if first_page_nb {
-      "-- 1 --"
+      "1"
     } else {
       (..nums) => {
         let nb = nums.pos().map(str).at(0)
         if nb == "1" {
           none
         } else {
-          [-- #nb --]
+          nb
         }
       }
     }
@@ -359,6 +349,14 @@
         none
       }
     },
+    footer: context {
+      let page_nb = counter(page).display()
+      if page_nb == none {
+        none
+      } else {
+        align(center, [-- #page_nb --])
+      }
+    },
   )
 
   set par(justify: true, first-line-indent: 0em)
@@ -366,11 +364,9 @@
 
   set text(font: "New Computer Modern", lang: s_lang.final())
 
-  set heading(
-    numbering: (..nums) => context {
-      numbering(heading_numbering.get(), ..(nums.pos()))
-    },
-  )
+  set heading(numbering: (..nums) => context {
+    numbering(heading_numbering.get(), ..(nums.pos()))
+  })
 
   // Display math equations only if they have a label
   show: it => {
@@ -397,16 +393,14 @@
   set enum(indent: 1em)
 
   // Reference style
-  set ref(
-    supplement: it => {
-      let fig = it.func()
-      if fig == math.equation {
-        text(fill: black, "Eq.")
-      } else if fig == figure {
-        text(fill: black, it.supplement)
-      }
-    },
-  )
+  set ref(supplement: it => {
+    let fig = it.func()
+    if fig == math.equation {
+      text(fill: black, "Eq.")
+    } else if fig == figure {
+      text(fill: black, it.supplement)
+    }
+  })
 
   set outline(indent: auto)
   set outline.entry(fill: repeat([.$space$]))
@@ -438,16 +432,13 @@
 
   show heading: it => context {
     set text(font: sans_serif_font)
-    if it.level == 1 and it.body != bib_wording.at(s_lang.final()) {
+    let counter_value = counter(heading).get().at(0)
+
+    if it.level == 1 and not nonumber_headings.final().contains(it.body) {
       grid(
         columns: (5%, 95%),
         column-gutter: 0.5em,
-        square(
-          width: 100%,
-          fill: black,
-          radius: 0.2em,
-          align(horizon + center, text(fill: white, counter(heading).display())),
-        ),
+        square(width: 100%, fill: black, radius: 0.2em, align(horizon + center, text(fill: white, [#counter_value]))),
         align(horizon, it.body),
       )
       v(0.3em)
@@ -457,51 +448,41 @@
     }
   }
 
+  //show outline: set page(numbering: "1")
+
   // Title & subtitle
-  align(
-    center,
-    {
-      text(size: 18pt, font: sans_serif_font)[*#title*]
-      if subtitle != none {
-        text(size: 14pt)[ \ #emph(subtitle)]
-      }
-    },
-  )
+  align(center, {
+    text(size: 18pt, font: sans_serif_font)[*#title*]
+    if subtitle != none {
+      text(size: 14pt)[ \ #emph(subtitle)]
+    }
+  })
 
   // Authors
   if authors == none {
-    align(
-      center,
-      text(font: sans_serif_font, size: 12pt)[
-        Gaëtan Serré \
-        Centre Borelli - ENS Paris-Saclay \
-        #text(font: "CMU Typewriter Text")[
-          #link("mailto:gaetan.serre@ens-paris-saclay.fr")
-        ]
-      ],
-    )
+    align(center, text(font: sans_serif_font, size: 12pt)[
+      Gaëtan Serré \
+      Centre Borelli - ENS Paris-Saclay \
+      #text(font: "CMU Typewriter Text")[
+        #link("mailto:gaetan.serre@ens-paris-saclay.fr")
+      ]
+    ])
   } else {
     for author in authors {
-      align(
-        center,
-        text(font: sans_serif_font, size: 14pt)[
-          #author.name \
-          #author.affiliation \
-          #text(font: "CMU Typewriter Text")[
-            #link("mailto:" + author.email)
-          ]
-        ],
-      )
+      align(center, text(font: sans_serif_font, size: 14pt)[
+        #author.name \
+        #author.affiliation \
+        #text(font: "CMU Typewriter Text")[
+          #link("mailto:" + author.email)
+        ]
+      ])
     }
   }
 
   if supervision != none {
-    align(
-      center,
-      [
-        #supervision
-      ],
-    )
+    align(center, [
+      #supervision
+    ])
   }
 
   // Abstract
@@ -509,41 +490,23 @@
 
   if abstract != none {
     align(center, text()[*Abstract*])
-    align(
-      center,
-      box(
-        width: width_box_abstract,
-        align(
-          left,
-          text(size: 10pt)[
-            #abstract
-          ],
-        ),
-      ),
-    )
+    align(center, box(width: width_box_abstract, align(left, text(size: 10pt)[
+      #abstract
+    ])))
   }
 
   // Keywords
-  align(
-    center,
-    box(
-      width: width_box_abstract,
-      align(
-        left,
-        {
-          set text(size: 10pt)
-          if keywords.len() > 0 {
-            [*Keywords: *]
-            let last_keyword = keywords.pop()
-            for keyword in keywords {
-              [#keyword] + [; ]
-            }
-            [#last_keyword.]
-          }
-        },
-      ),
-    ),
-  )
+  align(center, box(width: width_box_abstract, align(left, {
+    set text(size: 10pt)
+    if keywords.len() > 0 {
+      [*Keywords: *]
+      let last_keyword = keywords.pop()
+      for keyword in keywords {
+        [#keyword] + [; ]
+      }
+      [#last_keyword.]
+    }
+  })))
 
   doc
 }
