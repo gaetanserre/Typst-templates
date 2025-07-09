@@ -7,7 +7,7 @@
 
 #let TODO(it) = {
   let color = rgb("#d4bb65")
-  box(width: 100%, stroke: 3pt + color, inset: 0.5em, [
+  box(width: 100%, stroke: 3pt + color, inset: 1em, [
     #text(fill: color, font: sans_serif_font, underline(stroke: 1.5pt, offset: 2pt, [*TODO!!*])) \
     #it
   ])
@@ -134,7 +134,10 @@
 )
 
 #let proof(it) = context {
-  block(width: 90%, align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])))
+  block(width: 100%, align(
+    left,
+    [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, $square.stroked$),
+  ))
 }
 
 
