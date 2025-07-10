@@ -433,6 +433,11 @@
     }
   }
 
+  set heading(outlined: false, bookmarked: false)
+  show heading.where(level: 1): set heading(outlined: true, bookmarked: true)
+  show heading.where(level: 2): set heading(outlined: true, bookmarked: true)
+  show heading.where(level: 3): set heading(outlined: true, bookmarked: true)
+
   show heading: it => context {
     set text(font: sans_serif_font)
     let counter_value = counter(heading).get().at(0)
@@ -445,8 +450,11 @@
         align(horizon, it.body),
       )
       v(0.3em)
-    } else {
+    } else if it.level < 4 {
       it
+      v(0.2em)
+    } else {
+      it.body
       v(0.2em)
     }
   }
