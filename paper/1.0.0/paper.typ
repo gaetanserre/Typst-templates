@@ -21,6 +21,7 @@
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
 #let proof_wording = ("en": [Proof], "fr": [Preuve])
+#let chapter_wording = ("en": [Chapter], "fr": [Chapitre])
 
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
@@ -367,7 +368,7 @@
 
   set text(font: "New Computer Modern", lang: s_lang.final())
 
-  set heading(numbering: (..nums) => context {
+  set heading(outlined: false, bookmarked: false, supplement: "Section", numbering: (..nums) => context {
     numbering(heading_numbering.get(), ..(nums.pos()))
   })
 
@@ -402,6 +403,8 @@
       text(fill: black, "Eq.")
     } else if fig == figure {
       text(fill: black, it.supplement)
+    } else {
+      text(fill: black, it.supplement)
     }
   })
 
@@ -433,8 +436,9 @@
     }
   }
 
-  set heading(outlined: false, bookmarked: false)
-  show heading.where(level: 1): set heading(outlined: true, bookmarked: true)
+  show heading.where(level: 1): set heading(outlined: true, bookmarked: true, supplement: chapter_wording.at(
+    s_lang.final(),
+  ))
   show heading.where(level: 2): set heading(outlined: true, bookmarked: true)
   show heading.where(level: 3): set heading(outlined: true, bookmarked: true)
 
