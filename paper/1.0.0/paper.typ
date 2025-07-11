@@ -463,8 +463,6 @@
     }
   }
 
-  //show outline: set page(numbering: "1")
-
   // Title & subtitle
   align(center, {
     text(size: 18pt, font: sans_serif_font)[*#title*]
@@ -475,9 +473,9 @@
 
   // Authors
   if authors == none {
-    align(center, text(font: sans_serif_font, size: 12pt)[
-      Gaëtan Serré \
-      Centre Borelli - ENS Paris-Saclay \
+    align(center, text(font: "New Computer Modern", size: 12pt)[
+      _Gaëtan Serré_ \
+      _Centre Borelli - ENS Paris-Saclay_ \
       #text(font: "CMU Typewriter Text")[
         #link("mailto:gaetan.serre@ens-paris-saclay.fr")
       ]
