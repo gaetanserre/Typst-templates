@@ -19,7 +19,7 @@
 
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
-#let outline_wording = ("en": [Outline], "fr": [Table des matières])
+#let outline_wording = ("en": [Contents], "fr": [Table des matières])
 #let proof_wording = ("en": [Proof], "fr": [Preuve])
 #let chapter_wording = ("en": [Chapter], "fr": [Chapitre])
 
@@ -83,39 +83,44 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none) = math_block(
+#let lemma(name, it, label: none, numbering: true) = math_block(
   ("en": "Lemma", "fr": "Lemme"),
   name,
   it,
   label,
+  numbering: numbering,
 )
 
-#let proposition(name, it, label: none) = math_block(
+#let proposition(name, it, label: none, numbering: true) = math_block(
   ("en": "Proposition", "fr": "Proposition"),
   name,
   it,
   label,
+  numbering: numbering,
 )
 
-#let theorem(name, it, label: none) = math_block(
+#let theorem(name, it, label: none, numbering: true) = math_block(
   ("en": "Theorem", "fr": "Théorème"),
   name,
   it,
   label,
+  numbering: numbering,
 )
 
-#let corollary(name, it, label: none) = math_block(
+#let corollary(name, it, label: none, numbering: true) = math_block(
   ("en": "Corollary", "fr": "Corollaire"),
   name,
   it,
   label,
+  numbering: numbering,
 )
 
-#let definition(name, it, label: none) = math_block(
+#let definition(name, it, label: none, numbering: true) = math_block(
   ("en": "Definition", "fr": "Définition"),
   name,
   it,
   label,
+  numbering: numbering,
 )
 
 #let remark(it, label: none, numbering: false) = math_block(
@@ -254,19 +259,14 @@
   }))
 }
 
-/*********************************LANGUAGE ENVIRONMENT*******************************************/
-/*************************************************************************************************/
-
-/***LEAN***/
-// #let lean_font(cont) = text(font: "FiraCode Nerd Font", size: 9pt, cont)
-
 #let lean_block(it) = {
   block(
     width: 100%,
-    stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
-    fill: rgb("#eeeeee"),
+    stroke: ("left": 2pt + black, "rest": none),
+    fill: rgb("#f7f7f7"),
     inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, raw(lang: "lean4", it)),
+    radius: (right: 0.3em),
+    align(left, it),
   )
 }
 
@@ -283,6 +283,10 @@
 #let appendix() = {
   heading_numbering.update("A.1")
   nonumber_heading([= Appendix])
+}
+
+#let inline_title(it) = {
+  text(font: sans_serif_font, [*#it.*~])
 }
 
 #let config(
@@ -366,7 +370,12 @@
   set par(justify: true, first-line-indent: 0em)
 
 
-  set text(font: "New Computer Modern", lang: s_lang.final())
+  set text(font: "New Computer Modern", lang: s_lang.final(), costs: (
+    hyphenation: 60%,
+    runt: 100%,
+    widow: 100%,
+    orphan: 100%,
+  ))
 
   set heading(outlined: false, bookmarked: false, supplement: "Section", numbering: (..nums) => context {
     numbering(heading_numbering.get(), ..(nums.pos()))
@@ -441,6 +450,7 @@
   ))
   show heading.where(level: 2): set heading(outlined: true, bookmarked: true)
   show heading.where(level: 3): set heading(outlined: true, bookmarked: true)
+  show heading.where(body: outline_wording_final): set heading(outlined: false, bookmarked: true)
 
   show heading: it => context {
     set text(font: sans_serif_font)
@@ -502,10 +512,8 @@
   let width_box_abstract = 80%
 
   if abstract != none {
-    align(center, text()[*Abstract*])
-    align(center, box(width: width_box_abstract, align(left, text(size: 10pt)[
-      #abstract
-    ])))
+    let abstract_word = text(font: sans_serif_font, size: 9pt, [*Abstract.*])
+    align(center, box(width: width_box_abstract, align(left, text(size: 10pt, [#abstract_word #abstract]))))
   }
 
   // Keywords
