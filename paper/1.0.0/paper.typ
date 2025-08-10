@@ -427,7 +427,7 @@
 
   show ref: set text(fill: rgb("#ff0000"))
   show footnote: set text(fill: rgb("#ff0000"))
-  show link: set text(fill: rgb("#7209b7"))
+  show link: set text(fill: rgb("#657ed4"))
   show cite: set text(fill: rgb("#4361ee"))
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
