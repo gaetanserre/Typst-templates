@@ -123,6 +123,14 @@
   numbering: numbering,
 )
 
+#let property(name, it, label: none, numbering: true) = math_block(
+  ("en": "Property", "fr": "Propriété"),
+  name,
+  it,
+  label,
+  numbering: numbering,
+)
+
 #let remark(it, label: none, numbering: false) = math_block(
   ("en": "Remark", "fr": "Remarque"),
   none,
