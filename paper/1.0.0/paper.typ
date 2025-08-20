@@ -20,6 +20,7 @@
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Contents], "fr": [Table des matières])
+#let acknowledgements_wording = ("en": [Acknowledgements], "fr": [Remerciements])
 #let proof_wording = ("en": [Proof], "fr": [Preuve])
 #let chapter_wording = ("en": [Chapter], "fr": [Chapitre])
 
@@ -314,7 +315,13 @@
 
   let bib_wording_final = bib_wording.at(s_lang.final())
   let outline_wording_final = outline_wording.at(s_lang.final())
-  nonumber_headings.update(headings => (headings, bib_wording_final, outline_wording_final))
+  let acknowledgements_wording_final = acknowledgements_wording.at(s_lang.final())
+  nonumber_headings.update(headings => (
+    headings,
+    bib_wording_final,
+    outline_wording_final,
+    acknowledgements_wording_final,
+  ))
 
   // Odd-switching header function
   let header_loc = none
@@ -459,19 +466,25 @@
   show heading.where(level: 2): set heading(outlined: true, bookmarked: true)
   show heading.where(level: 3): set heading(outlined: true, bookmarked: true)
   show heading.where(body: outline_wording_final): set heading(outlined: false, bookmarked: true)
+  show heading.where(body: acknowledgements_wording_final): set heading(outlined: false, bookmarked: true)
 
   show heading: it => context {
     set text(font: sans_serif_font)
     let counter_value = counter(heading).get().at(0)
 
-    if it.level == 1 and not nonumber_headings.final().contains(it.body) {
-      grid(
-        columns: (5%, 95%),
-        column-gutter: 0.5em,
-        square(width: 100%, fill: black, radius: 0.2em, align(horizon + center, text(fill: white, [#counter_value]))),
-        align(horizon, it.body),
-      )
-      v(0.3em)
+    if it.level == 1 {
+      if not nonumber_headings.final().contains(it.body) {
+        grid(
+          columns: (5%, 95%),
+          column-gutter: 0.5em,
+          square(width: 100%, fill: black, radius: 0.2em, align(horizon + center, text(fill: white, [#counter_value]))),
+          align(horizon, it.body),
+        )
+        v(0.3em)
+      } else {
+        it.body
+        v(0.2em)
+      }
     } else if it.level < 4 {
       it
       v(0.2em)
