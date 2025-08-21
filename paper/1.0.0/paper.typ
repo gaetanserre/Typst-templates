@@ -268,15 +268,36 @@
   }))
 }
 
-#let lean_block(it) = {
-  block(
-    width: 100%,
-    stroke: ("left": 2pt + black, "rest": none),
-    fill: rgb("#f7f7f7"),
-    inset: (bottom: 0.7em, rest: 0.5em),
-    radius: (right: 0.3em),
-    align(left, it),
-  )
+#let lean_block(it, url: none) = {
+  let name_box = {
+    if url == none {
+      text(font: sans_serif_font, size: 10pt, fill: rgb("#657ed4"), [*Code*])
+    } else {
+      text(font: sans_serif_font, size: 10pt, link(url, [*Code*]))
+    }
+  }
+
+  let fill_color = rgb("#f7f7f7")
+
+  box(stroke: (left: 2pt + black), inset: (left: 0.5em, bottom: 0.5em), [
+
+    #box(
+      fill: fill_color,
+      inset: (left: 0em, rest: 0.5em),
+      outset: (left: 0.5em - 1pt),
+      radius: (top-right: 0.3em),
+      name_box,
+    )
+    #v(-1.4em)
+    #rect(
+      width: 100%,
+      fill: fill_color,
+      inset: (left: 0em, rest: 0.5em),
+      outset: (bottom: 0.5em, left: 0.5em - 1pt),
+      radius: (right: 0.3em),
+      align(left, it),
+    )
+  ])
 }
 
 #let heading_numbering = state("heading_numbering", "1.1")
