@@ -342,6 +342,7 @@
     bib_wording_final,
     outline_wording_final,
     acknowledgements_wording_final,
+    [Notations],
   ))
 
   // Odd-switching header function
@@ -404,7 +405,6 @@
   )
 
   set par(justify: true, first-line-indent: 0em)
-
 
   set text(font: "New Computer Modern", lang: s_lang.final(), costs: (
     hyphenation: 60%,
