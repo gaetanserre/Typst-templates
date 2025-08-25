@@ -481,13 +481,23 @@
     }
   }
 
-  show heading.where(level: 1): set heading(outlined: true, bookmarked: true, supplement: chapter_wording.at(
-    s_lang.final(),
-  ))
+  show heading.where(level: 1): set heading(
+    outlined: true,
+    bookmarked: true,
+    supplement: chapter_wording.at(
+      s_lang.final(),
+    ),
+  )
   show heading.where(level: 2): set heading(outlined: true, bookmarked: true)
   show heading.where(level: 3): set heading(outlined: true, bookmarked: true)
-  show heading.where(body: outline_wording_final): set heading(outlined: false, bookmarked: true)
-  show heading.where(body: acknowledgements_wording_final): set heading(outlined: false, bookmarked: true)
+
+  show heading.where(body: outline_wording_final): set heading(outlined: false, bookmarked: true, numbering: none)
+  show heading.where(body: acknowledgements_wording_final): set heading(
+    outlined: false,
+    bookmarked: true,
+    numbering: none,
+  )
+  show heading.where(body: [Notations]): set heading(numbering: none)
 
   show heading: it => context {
     set text(font: sans_serif_font)
