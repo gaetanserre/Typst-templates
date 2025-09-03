@@ -40,8 +40,9 @@
   return bib_page_nb - 1
 }
 
-#let title_color = rgb("#503fa1")
-#let subtitle_color = rgb("#937bf1")
+#let accent = rgb("#657ed4")
+#let title_color = accent
+#let subtitle_color = rgb("#69696a")
 #let s_title_color = state("title_color", title_color)
 #let s_subtitle_color = state("subtitle_color", subtitle_color)
 
@@ -259,20 +260,24 @@
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
-#let math_block(supplement_dict, name, it, lb, eq_numbering) = context {
+#let math_block(supplement_dict, name, it, lb, numbering: true) = context {
   let supplement = supplement_dict.at(s_lang.final())
   let counter = counter(supplement)
-  counter.step()
-
-  set math.equation(numbering: eq_numbering)
-
-  let count = counter.get().at(0) + 1
+  let prefix = {
+    if numbering {
+      counter.step()
+      let count = counter.get().at(0) + 1
+      [*#supplement #count*]
+    } else {
+      [*#supplement*]
+    }
+  }
 
   let name_box = if name == none {
-    text(font: "Noto Emoji", size: 15pt, [*#supplement #count*])
+    text(font: sans_serif_font, size: 15pt, prefix)
   } else {
     [
-      #text(font: sans_serif_font, size: 15pt, [*#supplement #count* --])
+      #text(font: sans_serif_font, size: 15pt, [#prefix --])
       #emph(name)
     ]
   }
@@ -294,6 +299,7 @@
         fill: fill_color,
         inset: (left: 0em, rest: 0.5em),
         outset: (bottom: 0.5em, left: 0.5em - 1pt),
+        radius: (right: 0.3em),
         align(left, it),
       )
     ])),
@@ -311,64 +317,75 @@
 
 // Math blocks
 
-#let lemma(name, it, label: none, eq_numbering: none) = math_block(
+#let lemma(name, it, label: none, numbering: true) = math_block(
   ("en": "Lemma", "fr": "Lemme"),
   name,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
-#let proposition(name, it, label: none, eq_numbering: none) = math_block(
+#let proposition(name, it, label: none, numbering: true) = math_block(
   ("en": "Proposition", "fr": "Proposition"),
   name,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
-#let theorem(name, it, label: none, eq_numbering: none) = math_block(
+#let theorem(name, it, label: none, numbering: true) = math_block(
   ("en": "Theorem", "fr": "Théorème"),
   name,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
-#let corollary(name, it, label: none, eq_numbering: none) = math_block(
+#let corollary(name, it, label: none, numbering: true) = math_block(
   ("en": "Corollary", "fr": "Corollaire"),
   name,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
-#let definition(name, it, label: none, eq_numbering: none) = math_block(
+#let definition(name, it, label: none, numbering: true) = math_block(
   ("en": "Definition", "fr": "Définition"),
   name,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
-#let remark(name, it, label: none, eq_numbering: none) = math_block(
-  ("en": "Remark", "fr": "Remarque"),
+#let property(name, it, label: none, numbering: true) = math_block(
+  ("en": "Property", "fr": "Propriété"),
   name,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
-#let example(it, label: none, eq_numbering: none) = math_block(
+#let remark(it, label: none, numbering: false) = math_block(
+  ("en": "Remark", "fr": "Remarque"),
+  none,
+  it,
+  label,
+  numbering: numbering,
+)
+
+#let example(it, label: none, numbering: false) = math_block(
   ("en": "Example", "fr": "Exemple"),
   none,
   it,
   label,
-  eq_numbering,
+  numbering: numbering,
 )
 
 #let proof(it) = context {
-  block(width: 90%, align(left, [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, text()[$qed$])))
+  block(width: 100%, align(
+    left,
+    [_#proof_wording.at(s_lang.final())._ $space$] + it + align(right, $square.stroked$),
+  ))
 }
 
 /*********************************ALGORITHM ENVIRONMENT*******************************************/
@@ -489,14 +506,36 @@
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
 /*************************************************************************************************/
 
-#let lean_block(it) = {
-  block(
-    width: 100%,
-    stroke: ("left": 1pt + rgb("#d73a4a"), "rest": none),
-    fill: rgb("#f8f6fb"),
-    inset: (bottom: 0.7em, rest: 0.5em),
-    align(left, raw(lang: "lean4", it)),
-  )
+#let lean_block(it, url: none) = {
+  let name_box = {
+    if url == none {
+      text(font: sans_serif_font, size: 15pt, fill: rgb("#657ed4"), [*Code*])
+    } else {
+      text(font: sans_serif_font, size: 15pt, link(url, [*Code*]))
+    }
+  }
+
+  let fill_color = rgb("#f7f7f7")
+
+  box(stroke: (left: 2pt + black), inset: (left: 0.5em, bottom: 0.5em), [
+
+    #box(
+      fill: fill_color,
+      inset: (left: 0em, rest: 0.5em),
+      outset: (left: 0.5em - 1pt),
+      radius: (top-right: 0.3em),
+      name_box,
+    )
+    #v(-1.4em)
+    #rect(
+      width: 100%,
+      fill: fill_color,
+      inset: (left: 0em, rest: 0.5em),
+      outset: (bottom: 0.5em, left: 0.5em - 1pt),
+      radius: (right: 0.3em),
+      align(left, it),
+    )
+  ])
 }
 
 #let gray(it) = text(fill: rgb("#888888"), it)
@@ -568,7 +607,7 @@
     if fig == math.equation {
       text(fill: black, "Eq.")
     } else if fig == figure {
-      gray(it.supplement)
+      text(fill: black, it.supplement)
     }
   })
 
