@@ -550,7 +550,7 @@
   if page_nb == 0 or h == outline_wording.at(s_lang.at(loc)) {
     return []
   }
-  let last_page = counter("page").final().at(0) //get_last_page_before_bib(loc)
+  let last_page = get_last_page_before_bib(loc)
   let max_size_bar = 50pt
   let current_size_bar = ((page_nb - 1) / (last_page - 1)) * max_size_bar
 
