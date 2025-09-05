@@ -37,7 +37,7 @@
       bib_page_nb = counter("page").at(heading.location()).at(0)
     }
   }
-  return bib_page_nb - 1
+  return bib_page_nb
 }
 
 #let accent = rgb("#657ed4")
