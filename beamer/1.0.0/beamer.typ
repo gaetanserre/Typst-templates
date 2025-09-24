@@ -7,6 +7,11 @@
   text(fill: red, weight: "extrabold", [TODO #it])
 }
 
+#let scr(it) = text(
+  features: ("ss01",),
+  box($cal(it)$),
+)
+
 /**********************************BEAMER ENVIRONMENT*********************************************/
 /*************************************************************************************************/
 
@@ -475,14 +480,15 @@
   output: none,
   content: none,
 ) = context {
+  counter("algorithm").step()
   set text(font: "New Computer Modern")
   align(center, block(width: auto, {
     align(left, {
-      counter("algorithm").step()
       //show line: set block(above: 0.4em, below: 0.4em)
       set par(first-line-indent: 0em)
+      let nb_alg = counter("algorithm").at(here()).at(0) + 1
       box(width: 1fr, line(length: 100%, stroke: { 1.5pt + black })) + [ \ ]
-      [*Algorithm #counter("algorithm").display():* #smallcaps(name) \ ]
+      [*Algorithm #nb_alg:* #smallcaps(name) \ ]
       box(width: 1fr, line(length: 100%, stroke: { 1pt + black })) + [ \ ]
       if input != none {
         [*Input:*]

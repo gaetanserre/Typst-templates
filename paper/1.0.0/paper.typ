@@ -13,6 +13,11 @@
   ])
 }
 
+#let scr(it) = text(
+  features: ("ss01",),
+  box($cal(it)$),
+)
+
 #let link_note(url, text) = {
   link(url)[#text] + footnote(link(url))
 }
