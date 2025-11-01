@@ -3,7 +3,7 @@
  */
 
 
-#let sans_serif_font = "Noto Sans"
+#let sans_serif_font = "SF Pro Display"
 
 #let TODO(it) = {
   let color = rgb("#d4bb65")
