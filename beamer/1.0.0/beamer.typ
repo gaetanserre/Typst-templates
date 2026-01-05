@@ -76,11 +76,18 @@
 }
 
 #let title_style(title) = context {
-  text(size: 25pt, fill: s_title_color.final(), [#v(-0.5em) #title])
+  set text(25pt, weight: "bold", fill: s_title_color.final())
+  v(-0.5em)
+  grid(
+    columns: (5%, 95%),
+    column-gutter: 0.5em,
+    square(width: 100%, fill: black, radius: 0.2em, align(horizon + center, circle(radius: 8pt, fill: white))),
+    align(horizon, title),
+  )
 }
 
 #let subtitle_style(subtitle) = context {
-  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #subtitle #v(-0.555em)])
+  text(style: "italic", fill: s_subtitle_color.get(), [#v(-0.5em) #h(4em) #subtitle #v(-0.555em)])
 }
 
 #let slide(
@@ -95,6 +102,7 @@
   if title != none {
     if has_previous_title(title) {
       title_style(title)
+      v(-1.1em)
     } else {
       [= #title]
     }
@@ -103,6 +111,7 @@
   if subtitle != none {
     if has_previous_subtitle(title, subtitle) {
       subtitle_style(subtitle)
+      v(0.55em)
     } else {
       [== #subtitle]
       counter("page").step()
@@ -567,7 +576,7 @@
       align(left, box(width: max_size_bar, height: 6pt, fill: rgb("#eeeeee"), radius: 3pt, align(left, rect(
         width: current_size_bar,
         height: 6pt,
-        fill: grad_color,
+        fill: black,
         radius: 3pt,
       ))))
     }
@@ -623,7 +632,7 @@
 
   // Show rules
   show ref: set text(fill: rgb("#ff0000"))
-  show link: set text(fill: title_color)
+  show link: set text(fill: accent)
   show cite: set text(fill: rgb("#4361ee"))
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
@@ -650,17 +659,23 @@
   show heading: it => {
     set align(left)
     if it.level == 1 {
-      set text(25pt, weight: "regular", fill: s_title_color.final())
+      set text(25pt, weight: "bold", fill: s_title_color.final())
       v(-0.5em)
       if it.body == bib_wording.at(s_lang.at(here())) {
         it.body
         v(1.5em)
       } else {
-        it.body
+        grid(
+          columns: (5%, 95%),
+          column-gutter: 0.5em,
+          square(width: 100%, fill: black, radius: 0.2em, align(horizon + center, circle(radius: 8pt, fill: white))),
+          align(horizon, it.body),
+        )
       }
     } else if it.level == 2 {
       set text(15pt, style: "italic", weight: "regular", fill: s_subtitle_color.final())
       v(-0.5em)
+      h(4em)
       it.body
     } else {
       it.body
