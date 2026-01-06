@@ -21,8 +21,8 @@
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
 #let thanks_wording = (
-  "en": [Thank you for your #text(fill: rgb("#937bf1"), [attention])!],
-  "fr": [Merci pour votre #text(fill: rgb("#937bf1"), [attention]) !],
+  "en": [*Thank you for your attention!*],
+  "fr": [*Merci pour votre attention !*],
 )
 
 #let past_bib(loc) = {
@@ -524,9 +524,9 @@
 #let lean_block(it, url: none) = {
   let name_box = {
     if url == none {
-      text(font: sans_serif_font, size: 15pt, fill: rgb("#657ed4"), [*Code*])
+      text(font: sans_serif_font, size: 15pt, fill: rgb("#657ed4"), [L$exists forall$N])
     } else {
-      text(font: sans_serif_font, size: 15pt, link(url, [*Code*]))
+      text(font: sans_serif_font, size: 15pt, link(url, [L$exists forall$N]))
     }
   }
 
@@ -534,13 +534,13 @@
 
   box(stroke: (left: 2pt + black), inset: (left: 0.5em, bottom: 0.5em), [
 
-    #box(
+    #align(left, box(
       fill: fill_color,
       inset: (left: 0em, rest: 0.5em),
       outset: (left: 0.5em - 1pt),
       radius: (top-right: 0.3em),
       name_box,
-    )
+    ))
     #v(-1.4em)
     #rect(
       width: 100%,
