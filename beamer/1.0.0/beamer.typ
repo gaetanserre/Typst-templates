@@ -106,19 +106,19 @@
     } else {
       [= #title]
     }
-  }
-
-  if subtitle != none {
-    if has_previous_subtitle(title, subtitle) {
-      subtitle_style(subtitle)
-      v(0.55em)
-    } else {
-      [== #subtitle]
+    if subtitle != none {
+      if has_previous_subtitle(title, subtitle) {
+        subtitle_style(subtitle)
+        v(0.55em)
+      } else {
+        [== #subtitle]
+        counter("page").step()
+      }
+    } else if not has_previous_title(title) {
       counter("page").step()
     }
-  } else if not has_previous_title(title) {
-    counter("page").step()
   }
+
 
   set par(leading: 0.65em)
 
@@ -573,17 +573,26 @@
     if past_bib(loc) {
       []
     } else {
-      align(left, box(width: max_size_bar, height: 6pt, fill: rgb("#eeeeee"), radius: 3pt, align(left, rect(
-        width: current_size_bar,
-        height: 6pt,
-        fill: black,
-        radius: 3pt,
-      ))))
+      align(left, box(width: max_size_bar, height: 6pt, fill: rgb("#fff"), radius: 3pt, stroke: 0.5pt + black, align(
+        left,
+        rect(
+          width: current_size_bar,
+          height: 6pt,
+          fill: black,
+          radius: 3pt,
+        ),
+      )))
     }
   }
   grid(
     columns: (33%, 33%, 33%),
-    box, align(center, text(size: 9pt, running_author)), align(right, text(size: 9pt, [#page_nb])),
+    align(left, text(size: 9pt, running_author)),
+    [],
+    grid(
+      columns: (78%, 22%),
+      column-gutter: 0.5em,
+      align(right, text(size: 9pt, [#page_nb])), box,
+    ),
   )
 }
 
