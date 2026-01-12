@@ -521,12 +521,21 @@
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
 /*************************************************************************************************/
 
+#let lean(it: [], it_rev: [], style: it => it) = grid(
+  columns: 5,
+  if it == [] { none } else [#it_rev~],
+  style([L]),
+  rotate(180deg, style([AE])),
+  style([N]),
+  if it == [] { none } else [~#it],
+)
+
 #let lean_block(it, url: none) = {
   let name_box = {
     if url == none {
-      text(font: sans_serif_font, size: 15pt, fill: rgb("#657ed4"), [L$exists forall$N])
+      text(font: sans_serif_font, size: 15pt, fill: rgb("#657ed4"), lean())
     } else {
-      text(font: sans_serif_font, size: 15pt, link(url, [L$exists forall$N]))
+      text(font: sans_serif_font, size: 15pt, link(url, lean()))
     }
   }
 
@@ -623,7 +632,12 @@
   set math.equation(numbering: none)
 
   set list(marker: ([•], $arrow.r.curve$))
-  set enum(indent: 1em)
+  set enum(indent: 1em, numbering: n => {
+    for i in range(n) {
+      [*i*]
+    }
+    [*)*]
+  })
 
   // Reference style
   set ref(supplement: it => {
