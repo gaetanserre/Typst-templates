@@ -523,11 +523,11 @@
 
 #let lean(it: [], it_rev: [], style: it => it) = grid(
   columns: 5,
-  if it == [] { none } else [#it_rev~],
+  if it == [] { none } else [#it_rev],
   style([L]),
   rotate(180deg, style([AE])),
   style([N]),
-  if it == [] { none } else [~#it],
+  if it == [] { none } else [#it],
 )
 
 #let lean_block(it, url: none) = {
