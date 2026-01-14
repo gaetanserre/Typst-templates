@@ -1,0 +1,7 @@
+# Ignore compiled PDFs
+*.pdf
+
+*.DS_Store
+# pixi environments
+.pixi
+*.egg-info
