@@ -533,7 +533,7 @@
 #let lean_block(it, url: none) = {
   let name_box = {
     if url == none {
-      text(font: sans_serif_font, size: 15pt, fill: rgb("#657ed4"), lean())
+      text(font: sans_serif_font, size: 15pt, [*#lean()*])
     } else {
       text(font: sans_serif_font, size: 15pt, link(url, lean()))
     }
