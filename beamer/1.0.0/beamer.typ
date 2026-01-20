@@ -523,7 +523,7 @@
 
 #let lean(it: [], it_rev: [], style: it => it) = grid(
   columns: 5,
-  if it == [] { none } else [#it_rev],
+  if it_rev == [] { none } else [#it_rev],
   style([L]),
   rotate(180deg, style([AE])),
   style([N]),
