@@ -530,7 +530,7 @@
   if it == [] { none } else [#it],
 )
 
-#let lean_block(it, url: none) = {
+#let lean_block(it, url: none, demo: false) = {
   let name_box = {
     if url == none {
       text(font: sans_serif_font, size: 15pt, [*#lean()*])
@@ -540,6 +540,11 @@
   }
 
   let fill_color = rgb("#f7f7f7")
+
+  let urlencode(s) = {
+    s.replace(" ", "%20").replace("\n", "%0A").replace("=", "%3D")
+  }
+
 
   box(stroke: (left: 2pt + black), inset: (left: 0.5em, bottom: 0.5em), [
 
@@ -557,7 +562,23 @@
       inset: (left: 0em, rest: 0.5em),
       outset: (bottom: 0.5em, left: 0.5em - 1pt),
       radius: (right: 0.3em),
-      align(left, it),
+      if demo {
+        grid(
+          columns: (93%, 7%),
+          align(left, it),
+          align(top + right, [
+            #v(-0.5em)
+            #box(
+              fill: white,
+              inset: (right: -0.1em, rest: 0.5em),
+              outset: (right: 0.5em),
+              stroke: (bottom: 1.5pt + black, left: 1.5pt + black),
+              link("https://live.lean-lang.org/#code=" + urlencode(it.text), [Demo]),
+            )]),
+        )
+      } else {
+        align(left, it)
+      },
     )
   ])
 }
