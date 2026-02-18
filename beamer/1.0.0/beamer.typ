@@ -652,7 +652,7 @@
 
   set math.equation(numbering: none)
 
-  set list(marker: ([•], $arrow.r.curve$))
+  set list(marker: ([#sym.square.filled], $arrow.r.curve$))
   set enum(indent: 1em, numbering: n => {
     for i in range(n) {
       [*i*]
