@@ -273,6 +273,8 @@
   }))
 }
 
+#let lean = text(font: "Fira Sans", weight: "light", [L$exists forall$N])
+
 #let lean_block(it, url: none) = {
   let name_box = {
     if url == none {
@@ -466,6 +468,7 @@
 
   // Show rules
 
+  show outline: set text(font: sans_serif_font)
   show ref: set text(fill: rgb("#ff0000"))
   show footnote: set text(fill: rgb("#ff0000"))
   show link: set text(fill: rgb("#657ed4"))
@@ -486,15 +489,10 @@
     }
   }
 
-  show heading.where(level: 1): set heading(
+  show heading.where(level: 1).or(heading.where(level: 2)).or(heading.where(level: 3)): set heading(
     outlined: true,
     bookmarked: true,
-    supplement: chapter_wording.at(
-      s_lang.final(),
-    ),
   )
-  show heading.where(level: 2): set heading(outlined: true, bookmarked: true)
-  show heading.where(level: 3): set heading(outlined: true, bookmarked: true)
 
   show heading.where(body: outline_wording_final): set heading(outlined: false, bookmarked: true, numbering: none)
   show heading.where(body: acknowledgements_wording_final): set heading(
