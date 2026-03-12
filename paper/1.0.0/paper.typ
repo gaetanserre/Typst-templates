@@ -442,7 +442,7 @@
     }
   }
 
-  set bibliography(style: "chicago-author-date")
+  set bibliography(style: "apa.csl")
 
   set terms(indent: 1em)
   set list(marker: ("--", $arrow.r.curve$))
