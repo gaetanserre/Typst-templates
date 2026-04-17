@@ -402,14 +402,14 @@
         none
       }
     },
-    footer: context {
-      let page_nb = counter(page).display()
-      if page_nb == none {
-        none
-      } else {
-        align(center, [-- #page_nb --])
-      }
-    },
+    footer: none, /* context {
+                    let page_nb = counter(page).display()
+                    if page_nb == none {
+                      none
+                    } else {
+                      align(center, [-- #page_nb --])
+                    }
+                  }, */
   )
 
   set par(justify: true, first-line-indent: 0em)
