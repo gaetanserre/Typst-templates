@@ -28,6 +28,7 @@
 #let acknowledgements_wording = ("en": [Acknowledgements], "fr": [Remerciements])
 #let proof_wording = ("en": [Proof], "fr": [Preuve])
 #let chapter_wording = ("en": [Chapter], "fr": [Chapitre])
+#let part_wording = ("en": [Part], "fr": [Partie])
 
 /***********************************MATHS ENVIRONMENT*********************************************/
 /*************************************************************************************************/
