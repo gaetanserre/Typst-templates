@@ -740,13 +740,8 @@
 
   set math.equation(numbering: none)
 
-  set list(marker: ([#sym.square.filled], $arrow.r.curve$))
-  set enum(indent: 1em, numbering: n => {
-    for i in range(n) {
-      [*i*]
-    }
-    [*)*]
-  })
+  set list(marker: (sym.square.filled, $arrow.r.curve$))
+  set enum(indent: 1em, numbering: (..nums) => strong(numbering("i.", ..nums)))
 
   // Reference style
   set ref(supplement: it => {
