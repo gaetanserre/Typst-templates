@@ -13,7 +13,7 @@ contexts:
         1: keyword.other.definitioncommand.lean
       push:
         - meta_scope: meta.definitioncommand.lean
-        - match: '(?=\bwith\b|\bextends\b|[:\|\(\[\{⦃⦄<>])'
+        - match: '(?=\bwith\b|\bwhere\b|\bextends\b|[:\|\(\[\{⦃⦄<>])'
           pop: true
         - include: comments
         - include: definitionName
@@ -32,11 +32,11 @@ contexts:
       scope: invalid.illegal.lean
     - match: '#print\s+(def|abbrev|definition|inductive|instance|structure|axiom|axioms|class)\b'
       scope: keyword.other.command.lean
-    - match: '#(print|eval|reduce|check|help|exit|find|where)\b'
+    - match: '#(print|eval|reduce|check|help|exit|find|where|kernel_diagram)\b'
       scope: keyword.other.command.lean
     - match: \b(?<!\.)(import|export|prelude|theory|definition|def|abbreviation|abbrev|instance|renaming|hiding|exposing|parameter|parameters|begin|constant|constants|lemma|variable|variables|theorem|example|open|axiom|inductive|coinductive|with|structure|universe|universes|alias|precedence|reserve|postfix|prefix|infix|infixl|infixr|notation|end|using|namespace|section|local|set_option|extends|include|omit|class|classes|instances|raw|run_cmd|restate_axiom|where)(?!\.)\b
       scope: keyword.other.lean
-    - match: \b(?<!\.)(calc|have|this|match|do|suffices|show|by|in|at|let|set|forall|fun|exists|assume|from|obtain|haveI|λ|rewrite|rw|exact|simp|simp_all|only|linarith|ring|intro|refine)(?!\.)\b
+    - match: \b(?<!\.)(calc|have|this|match|do|suffices|show|by|in|at|let|set|forall|fun|exists|assume|from|obtain|haveI|λ|rewrite|rw|exact|simp|simp_all|only|linarith|ring|intro|refine|dsimp|rfl|apply|ext|monoidal|kernel_hom|kernel_monoidal|infer_instance)(?!\.)\b
       scope: keyword.other.lean
     - match: «
       push:
@@ -68,14 +68,20 @@ contexts:
         1: constant.character.escape.lean
     - match: '`+[^\[(]\S+'
       scope: entity.name.lean
+    - match: 'ℝ[≥][0-9]+∞?|ℝ|ℕ'
+      scope: keyword.other.lean
     - match: '\b([0-9]+|0([xX][0-9a-fA-F]+))\b'
       scope: constant.numeric.lean
+  inlineCode:
+    - match: '`[^`]+`'
+      scope: markup.inline.raw.lean
   blockComment:
     - match: /-
       push:
         - meta_scope: comment.block.lean
         - match: "-/"
           pop: true
+        - include: inlineCode
         - include: scope:source.lean.markdown
         - include: blockComment
   comments:
@@ -92,6 +98,7 @@ contexts:
         - meta_scope: comment.line.double-dash.lean
         - match: $
           pop: true
+        - include: inlineCode
         - include: scope:source.lean.markdown
   definitionName:
     - match: '\b[^:«»\(\)\{\}⦃⦄[:space:]=→λ∀?][^:«»\(\)\{\}⦃⦄[:space:]]*'
@@ -107,6 +114,7 @@ contexts:
         - meta_scope: comment.block.documentation.lean
         - match: "-/"
           pop: true
+        - include: inlineCode
         - include: scope:source.lean.markdown
         - include: blockComment
   modDocComment:
@@ -115,6 +123,7 @@ contexts:
         - meta_scope: comment.block.documentation.lean
         - match: "-/"
           pop: true
+        - include: inlineCode
         - include: scope:source.lean.markdown
         - include: blockComment
   stringBlock:
@@ -123,5 +132,6 @@ contexts:
         - meta_scope: comment.block.string.lean
         - match: '"-/'
           pop: true
+        - include: inlineCode
         - include: scope:source.lean.markdown
         - include: blockComment

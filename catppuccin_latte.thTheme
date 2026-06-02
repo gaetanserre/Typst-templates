@@ -694,6 +694,19 @@
 				<string>italic</string>
 			</dict>
 		</dict>
+    <dict>
+      <key>name</key>
+      <string>Lean inline code</string>
+      <key>scope</key>
+      <string>markup.inline.raw.lean</string>
+      <key>settings</key>
+      <dict>
+        <key>foreground</key>
+        <string>#51a63f</string>
+        <key>font_style</key>
+        <string>italic</string>
+      </dict>
+    </dict>
 		<dict>
 			<key>name</key>
 			<string>Markdown title</string>
