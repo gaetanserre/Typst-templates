@@ -521,7 +521,95 @@
 /*********************************LANGUAGE ENVIRONMENT*******************************************/
 /*************************************************************************************************/
 
-#let lean(it: [], it_rev: [], style: it => it) = grid(
+#let lean = text(font: "Fira Sans", weight: "light", [L$exists forall$N])
+
+#let init_raw(doc) = context {
+  show raw: set text(font: ("FiraCode Nerd Font", "JuliaMono"))
+  set raw(theme: "catppuccin_latte.thTheme", syntaxes: "lean4.sublime-syntax")
+  show raw.where(block: true): it => {
+    if it.lang == "error" { return it }
+
+    show regex("\*\*([^*]+)\*\*"): it => {
+      let content = it.text.slice(2, -2)
+      [\*\*#text(fill: rgb("#d11c41"), weight: "bold", content)\*\*]
+    }
+    show regex("__([^*]+)__"): it => {
+      let content = it.text.slice(2, -2)
+      [\_#text(fill: rgb("#d11c41"), style: "italic", content)\_]
+    }
+
+    set par(spacing: 0.7em)
+    let lines = {
+      for line in it.lines {
+        let line_nb = if line.count >= 10 and line.number < 10 {
+          " " + str(line.number)
+        } else {
+          str(line.number)
+        }
+        align(left, [#text(fill: rgb("#8c9093"), line_nb) #line])
+      }
+    }
+
+    let lang = {
+      if it.lang == "lean4" or it.lang == "lean" {
+        lean
+      } else if it.lang == "cpp" {
+        [C++]
+      } else if it.lang != none {
+        upper(it.lang.at(0)) + it.lang.slice(1)
+      } else {
+        none
+      }
+    }
+    let stroke = 1pt + rgb("#d0d7de")
+
+    let lang_block = if lang != none {
+      block(
+        fill: white,
+        stroke: (bottom: stroke, left: stroke, rest: none),
+        radius: (top-right: 4pt, rest: 0pt),
+        inset: 5pt,
+        text(fill: black, lang),
+      )
+    } else {
+      none
+    }
+
+
+    let code_block = block(
+      fill: rgb("#f6f8fa"),
+      inset: (right: 0.49pt, rest: 10pt),
+      radius: 5pt,
+      stroke: stroke,
+      grid(
+        columns: 2,
+        align: top,
+        column-gutter: 2em,
+        lines,
+        [#v(-9.5pt)
+          #lang_block
+        ],
+      ),
+    )
+    align(center, code_block)
+  }
+  show raw.where(block: false): set text(size: 1em, hyphenate: true)
+
+  let info_block(it, color) = {
+    align(center, block(
+      inset: 0.5em,
+      stroke: (left: 2pt + color, rest: none),
+      align(left, text(fill: color, it)),
+    ))
+  }
+
+  show raw.where(block: true, lang: "error"): it => info_block(it.text, red)
+  show raw.where(block: true, lang: "info"): it => info_block(it.text, blue)
+
+  doc
+}
+
+/* #let lean(it: [], it_rev: [], style: it => it) = grid(
   columns: 5,
   if it_rev == [] { none } else [#it_rev],
   style([L]),
@@ -581,7 +669,7 @@
       },
     )
   ])
-}
+} */
 
 #let gray(it) = text(fill: rgb("#888888"), it)
 
@@ -728,5 +816,6 @@
   s_title_color.update(title_color)
   s_subtitle_color.update(subtitle_color)
   s_lang.update(lang)
+  let doc = init_raw(doc)
   doc
 }
