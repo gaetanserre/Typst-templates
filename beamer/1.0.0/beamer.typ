@@ -2,6 +2,8 @@
  * Created in 2023 by Gaëtan Serré
  */
 
+#import "@preview/shadowed:0.3.0": shadow
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node
 
 #let TODO(it) = {
   text(fill: red, weight: "extrabold", [TODO #it])
@@ -309,7 +311,7 @@
       )
       #v(-1.4em)
       #rect(
-        width: 100%,
+        width: auto,
         fill: fill_color,
         inset: (left: 0em, rest: 0.5em),
         outset: (bottom: 0.5em, left: 0.5em - 1pt),
@@ -575,7 +577,6 @@
       none
     }
 
-
     let code_block = block(
       fill: rgb("#f6f8fa"),
       inset: (right: 0.49pt, rest: 10pt),
@@ -593,7 +594,7 @@
     )
     align(center, code_block)
   }
-  show raw.where(block: false): set text(size: 1em, hyphenate: true)
+  show raw.where(block: false): set text(size: 1.1em, hyphenate: true)
 
   let info_block(it, color) = {
     align(center, block(
@@ -605,6 +606,39 @@
 
   show raw.where(block: true, lang: "error"): it => info_block(it.text, red)
   show raw.where(block: true, lang: "info"): it => info_block(it.text, blue)
+
+  show raw.where(block: true, lang: "prompt"): it => {
+    set text(font: "Adwaita Sans")
+    let cont = text(font: "Adwaita Sans", it.text)
+    let diag_circ = {
+      diagram(
+        node(
+          (0, 0),
+          text(fill: white, font: "Adwaita Sans", size: 11pt, [↑]),
+          inset: 0.15em,
+          fill: black,
+          shape: circle,
+        ),
+      )
+    }
+    shadow(blur: 4pt, fill: rgb("#bcbcbc"), radius: 14pt, block(
+      width: auto,
+      stroke: 0.5pt + rgb("#bcbcbc"),
+      fill: white,
+      radius: 14pt,
+      inset: 1em,
+      [
+        #cont
+        #grid(
+          columns: 3,
+          align: horizon,
+          align(left, text(size: 16pt, [$+$])),
+          block(width: measure(cont).width - 2em, repeat[$space$]),
+          align(right, text(size: 16pt, diag_circ)),
+        )
+      ],
+    ))
+  }
 
   doc
 }
