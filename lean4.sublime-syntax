@@ -37,7 +37,7 @@ contexts:
       scope: keyword.other.command.lean
     - match: \b(?<!\.)(import|export|prelude|theory|definition|def|abbreviation|abbrev|instance|renaming|hiding|exposing|parameter|parameters|begin|constant|constants|lemma|variable|variables|theorem|example|open|axiom|inductive|coinductive|with|structure|universe|universes|alias|precedence|reserve|postfix|prefix|infix|infixl|infixr|notation|end|using|namespace|section|local|set_option|extends|include|omit|class|classes|instances|raw|run_cmd|restate_axiom|where|unsafe|true|false|return)(?!\.)\b
       scope: keyword.other.lean
-    - match: \b(?<!\.)(calc|have|this|match|do|suffices|show|by|in|at|let|set|forall|fun|exists|assume|from|obtain|haveI|λ|rewrite|rw|exact|simp|simp_all|only|linarith|ring|intro|rintro|refine|dsimp|rfl|apply|ext|monoidal|kernel_hom|kernel_monoidal|infer_instance|exfalso|nomatch)(?!\.)\b
+    - match: \b(?<!\.)(calc|have|this|match|do|suffices|show|by|in|at|let|set|forall|fun|exists|assume|from|obtain|haveI|λ|rewrite|rw|exact|simp|simp_all|only|linarith|ring|intro|rintro|refine|dsimp|rfl|apply|ext|monoidal|kernel_hom|kernel_monoidal|infer_instance|exfalso|nomatch|by_contra)(?!\.)\b
       scope: keyword.other.lean
     - match: «
       push:
