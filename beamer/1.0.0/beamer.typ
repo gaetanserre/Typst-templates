@@ -609,7 +609,7 @@
 
   show raw.where(block: true, lang: "prompt"): it => {
     set text(font: "Adwaita Sans")
-    let cont = text(font: "Adwaita Sans", it.text)
+    let cont = align(left, text(font: "Adwaita Sans", it.text))
     let diag_circ = {
       diagram(
         node(
