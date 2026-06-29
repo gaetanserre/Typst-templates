@@ -122,7 +122,6 @@
     }
   }
 
-
   set par(leading: 0.65em)
 
   align(h_block_align + v_block_align, box([
@@ -738,9 +737,8 @@
     }
   }
   grid(
-    columns: (33%, 33%, 33%),
+    columns: (66%, 33%),
     align(left, text(size: 9pt, running_author)),
-    [],
     grid(
       columns: (78%, 22%),
       column-gutter: 0.5em,
