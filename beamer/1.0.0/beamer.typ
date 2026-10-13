@@ -22,6 +22,7 @@
 #let s_lang = state("lang", "en")
 #let bib_wording = ("en": [Bibliography], "fr": [Bibliographie])
 #let outline_wording = ("en": [Outline], "fr": [Table des matières])
+#let proof_wording = ("en": [Proof], "fr": [Démonstration])
 #let thanks_wording = (
   "en": [*Thank you for your attention!*],
   "fr": [*Merci pour votre attention !*],
@@ -166,10 +167,10 @@
   slide(
     title: title,
     subtitle: subtitle,
-    h_block_align: center,
-    v_block_align: horizon,
-    content: content,
+    h_block_align: h_block_align,
+    v_block_align: v_block_align,
     breakpage: breakpage,
+    content,
   )
 }
 
@@ -207,7 +208,7 @@
   let idx = ()
   for i in range(items.len()) {
     idx += (i,)
-    slide(title: title, content: align(left, bullet(
+    slide(title: title, align(left, bullet(
       idx,
       last_bullet: last_bullet,
     )))
@@ -232,7 +233,7 @@
   set page(footer: none, background: none)
   set par(first-line-indent: 0em)
   [= #outline_wording.at(s_lang.at(here()))]
-  let headings = query(selector(heading).after(here()), here()).slice(1, none)
+  let headings = query(selector(heading).after(here())).slice(1)
   let unique_headings = ()
   align(v_align, for heading in headings {
     if not check_heading_in_unique(heading, unique_headings) {
