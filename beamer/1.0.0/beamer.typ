@@ -64,14 +64,15 @@
   return false
 }
 
+// Title and subtitle of the last slide that has a title. A title used again later does not
+// produce a new level 1 heading, so the title of a subtitle is read from here.
+#let s_slide_titles = state("slide_titles", none)
+
 #let has_previous_subtitle(title, subtitle) = {
-  let headings = query(selector(heading).before(here()))
-  let h = none
-  for i in range(headings.len()) {
-    if headings.at(i).level == 1 or h == none {
-      h = headings.at(i)
-    }
-    if headings.at(i).body == subtitle and headings.at(i).level == 2 and h.body == title {
+  let headings = query(selector(heading.where(level: 2)).before(here()))
+  for heading in headings {
+    let titles = s_slide_titles.at(heading.location())
+    if heading.body == subtitle and titles != none and titles.title == title {
       return true
     }
   }
@@ -103,6 +104,10 @@
 ) = context {
   set par(leading: 20pt)
   if title != none {
+    let titles = (title: title, subtitle: subtitle)
+    // Steps of the same logical slide follow each other with the same title and subtitle
+    let new_logical_slide = s_slide_titles.get() != titles
+    s_slide_titles.update(titles)
     if has_previous_title(title) {
       title_style(title)
       v(-1.1em)
@@ -115,9 +120,9 @@
         v(0.55em)
       } else {
         [== #subtitle]
-        counter("page").step()
       }
-    } else if not has_previous_title(title) {
+    }
+    if new_logical_slide {
       counter("page").step()
     }
   }
