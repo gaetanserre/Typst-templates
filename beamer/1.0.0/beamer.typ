@@ -717,9 +717,14 @@
 #let footer(loc, running_author) = {
   let page_nb = counter("page").at(loc).at(0)
 
-  let h = query(selector(heading).after(loc)).map(h => { h.body }).at(0, default: [])
+  // No footer on the outline page. The next heading is the outline only on that page, not on
+  // the page before it.
+  let next = query(selector(heading).after(loc)).at(0, default: none)
+  let on_outline = (
+    next != none and next.body == outline_wording.at(s_lang.at(loc)) and next.location().page() == loc.page()
+  )
 
-  if page_nb == 0 or h == outline_wording.at(s_lang.at(loc)) {
+  if page_nb == 0 or on_outline {
     return []
   }
   let last_page = get_last_page_before_bib(loc)
@@ -730,13 +735,14 @@
     if past_bib(loc) {
       []
     } else {
-      align(left, box(width: max_size_bar, height: 6pt, fill: rgb("#fff"), radius: 3pt, stroke: 0.5pt + black, align(
+      // The bar is clipped by the rounded box. A rounded bar of its own would overflow the box on
+      // the first pages, where it is narrower than its two rounded ends.
+      align(left, box(width: max_size_bar, height: 6pt, fill: rgb("#fff"), radius: 3pt, stroke: 0.5pt + black, clip: true, align(
         left,
         rect(
           width: current_size_bar,
           height: 6pt,
           fill: black,
-          radius: 3pt,
         ),
       )))
     }
