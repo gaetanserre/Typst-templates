@@ -2,6 +2,8 @@
  * Created in 2023 by Gaëtan Serré
  */
 
+#import "@preview/subpar:0.2.2"
+
 
 #let sans_serif_font = "SF Pro Display"
 
@@ -20,6 +22,22 @@
 
 #let link_note(url, text) = {
   link(url)[#text] + footnote(link(url))
+}
+
+// Citations in the text, as in the manuscript: `#citet[@Liu2016]` gives "Liu & Wang (2016)",
+// `#citet[@a @b]` cites several works, and `#citets(<Lu2019>, [Theorem 2.8])` adds a supplement.
+#let citets(key, supplement) = cite(key, form: "prose", supplement: supplement)
+
+// Figure made of several sub-figures, numbered (a), (b), ... Each sub-caption is centered.
+#let subfigure(..args) = subpar.grid(
+  show-sub-caption: (num, it) => {
+    align(center, block(align(left, it)))
+  },
+  ..args,
+)
+#let citet(it) = {
+  set cite(form: "prose")
+  it
 }
 
 #let s_lang = state("lang", "en")
@@ -477,6 +495,17 @@
   show math.equation: set text(font: "New Computer Modern Math")
   show raw: set text(font: "FiraCode Nerd Font")
 
+
+  // Captions of the figures and tables, as in the manuscript: bold label, then the text in italics.
+  show figure.caption: it => context {
+    if it.kind != image and it.kind != table { return it }
+    set text(size: 0.9em)
+    v(0.5em)
+    let num = if it.numbering == none { none } else {
+      [ #numbering(it.numbering, ..it.counter.at(it.location()))]
+    }
+    align(center, block(align(left, [*#it.supplement#num*. #emph(it.body)])))
+  }
 
   // Algorithm & Lean figure
   show figure: fig => {
